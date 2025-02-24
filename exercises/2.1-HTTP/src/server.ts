@@ -158,25 +158,13 @@ curl -X PUT http://localhost:3000/pokemon/2 \
             res.statusCode = 404;
             res.setHeader('Content-Type', 'application/json');
             return res.end(JSON.stringify({ message: 'Pokemon not found' }, null, 2));
-        }
-        let body = '';
-        req.on('data', (chunk) =>{
-            body += chunk.toString();
-        });
-
-        req.on('end', () => {
-            try{
-                // delete a element by index
-                database.splice(foundPokemonIndex, 1);
-                res.statusCode = 200; // 'OK'
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify({ message: 'Pokemon delete!', payload: database[foundPokemonIndex] }, null, 2));
-            }catch(error){
-                res.statusCode = 400;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify({ message: 'Invalid JSON format' }, null, 2));
-            }           
-        });
+        }       
+        // delete a element by index
+        database.splice(foundPokemonIndex, 1);
+        res.statusCode = 200; // 'OK'
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: 'Pokemon delete!', payload: database[foundPokemonIndex] }, null, 2));
+    
     }   
 });
 server.listen(port, hostname, () => { 
