@@ -37,16 +37,8 @@ const server = http.createServer(  (req: IncomingMessage, res: ServerResponse) =
             { message: "Hello from the Pokemon Server!" }, null,2 
         ));
     } 
-    else if (req.method === "GET" && req.url === "/pokemon") {      
-        res.statusCode = 200;      
-        res.setHeader("Content-Type", "application/json");      
-        res.end(      
-          JSON.stringify(      
-            { message: "All Pokemon", payload: database }, null,2      
-        ));      
-     // get one pokemon
-    } 
-    /** Get pokemon by id
+ 
+    /** Get pokemon by id-- get one pokemon
      // Replace '1' with the Pokemon's ID
      curl -v http://localhost:3000/pokemon/1     
      */
@@ -69,8 +61,14 @@ const server = http.createServer(  (req: IncomingMessage, res: ServerResponse) =
     /** Get all pokemon
       curl -v http://localhost:3000/pokemon    
      */
-    else if (req.method === 'GET' && req.url === '/pokemon') {   
-        // Existing: Get all Pokemon ...
+    else if (req.method === "GET" && req.url === "/pokemon") {      
+    // Existing: Get all Pokemon ...
+        res.statusCode = 200;      
+        res.setHeader("Content-Type", "application/json");      
+        res.end(      
+            JSON.stringify(      
+            { message: "All Pokemon", payload: database }, null,2      
+        ));      
     } 
     /** POST
 curl -X POST http://localhost:3000/pokemon \
