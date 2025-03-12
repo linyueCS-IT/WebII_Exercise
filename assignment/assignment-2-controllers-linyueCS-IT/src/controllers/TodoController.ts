@@ -3,7 +3,7 @@ import postgres from "postgres";
 import Request from "../router/Request";
 import Response, { StatusCode } from "../router/Response";
 import Router from "../router/Router";
-
+import SubTodo, { SubTodoProps } from "./../models/SubTodo";
 /**
  * Controller for handling Todo CRUD operations.
  * Routes are registered in the `registerRoutes` method.
@@ -25,7 +25,34 @@ export default class TodoController {
 	 * @example router.get("/todos", this.getTodoList);
 	 */
 	registerRoutes(router: Router<TodoProps>) {
+		// GET - get all todos
 		router.get("/todos", this.getTodoList);
+		// GET - get one todo
+		router.get("/todos/:id", this.getTodo);
+		// POST - create todo
+		router.post("/todos", this.createTodo);
+		// PUT - update
+		router.put("/todos/:id", this.updateTodo);
+		// DELETE - delete
+		router.del("/todos/:id", this.deleteTodo);
+		// PUT - update status
+		router.put("/todos/:id/complete", this.completeTodo);
+		//---------SubTodo--------------------
+		// POST - create subTodo
+		router.post("/todos/:todoId/subtodos", this.createSubTodo);
+		// GET - get through todo id
+		router.get("/todos/:todoId/subtodos", this.getSubTodoList);
+		// GET - get one subTodo through todo id
+		router.get("/todos/:todoId/subtodos/:subTodoId", this.getSubTodo);
+		// PUT - update subTodo through todo id
+		router.put("/todos/:todoId/subtodos/:subTodoId", this.updateSubTodo);
+		// DELETE - delete subTodo
+		router.del("/todos/:todoId/subtodos/:subTodoId", this.deleteSubTodo);
+		// PUT - mark subTodo complete
+		router.put(
+			"/todos/:todoId/subtodos/:subTodoId/complete",
+			this.completeSubTodo,
+		);
 	}
 
 	/**
@@ -43,7 +70,57 @@ export default class TodoController {
 	 * @example GET /todos?sortBy=createdAt
 	 */
 	getTodoList = async (req: Request<TodoProps>, res: Response) => {
-		res.send(StatusCode.OK, "Todo list!", {});
+		try {
+			const queryParams = req.getSearchParams();
+			const sortBy = queryParams.get("sortBy") || undefined;
+			const status = queryParams.get("status");
+			// sortOrderRaw is string or null
+			const sortOrderRaw = queryParams.get("sortOrder");
+			//
+			let sortOrder: "ASC" | "DESC" | undefined;
+			const filters: Partial<TodoProps> = {};
+
+			// Validate status if provided
+			if (status && status !== "complete" && status !== "incomplete") {
+				res.send(StatusCode.BadRequest, "Invalid status", {});
+				return;
+			}
+			if (status === "complete" || status === "incomplete") {
+				filters.status = status; // TypeScript 推断为 "complete" | "incomplete"
+			}
+
+			if (sortOrderRaw === "ASC" || sortOrderRaw === "DESC") {
+				sortOrder = sortOrderRaw;
+			} else if (sortOrderRaw === null) {
+				sortOrder = "ASC";
+			} else {
+				res.send(
+					StatusCode.BadRequest,
+					"Invalid sortOrder, must be 'ASC' or 'DESC'",
+					{},
+				);
+				return;
+			}
+			// Use Todo.readAll() static method to get all todos
+			const todos = await Todo.readAll(
+				this.sql,
+				filters,
+				sortBy,
+				sortOrder,
+			);
+
+			// Send response
+			res.send(
+				StatusCode.OK,
+				"Todo list retrieved",
+				todos.map((todo) => todo.props),
+			);
+		} catch (error) {
+			console.error("Error fetching todos:", error);
+			res.send(StatusCode.BadRequest, "Failed to fetch todos", {
+				error: String(error),
+			});
+		}
 	};
 
 	/**
@@ -56,7 +133,28 @@ export default class TodoController {
 	 * @example GET /todos/1
 	 */
 	getTodo = async (req: Request<TodoProps>, res: Response) => {
-		res.send(StatusCode.OK, "Todo!", {});
+		try {
+			const id = req.getId();
+
+			if (isNaN(Number(id))) {
+				res.send(StatusCode.BadRequest, "Invalid ID", {});
+				return;
+			}
+
+			const todo = await Todo.read(this.sql, id);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+
+			res.send(StatusCode.OK, "Todo retrieved", todo.props);
+		} catch (error) {
+			console.error("Error fetching todo:", error);
+			res.send(StatusCode.NotFound, "Failed to fetch todo", {
+				error: String(error),
+			});
+		}
 	};
 
 	/**
@@ -69,9 +167,32 @@ export default class TodoController {
 	 * @example POST /todos { "title": "New Todo", "description": "A new todo" }
 	 */
 	createTodo = async (req: Request<TodoProps>, res: Response) => {
-		res.send(StatusCode.OK, "Todo created!", {});
-	};
+		try {
+			const todoProps = req.props;
 
+			if (!this.isValidTodoProps(todoProps)) {
+				res.send(
+					StatusCode.BadRequest,
+					"Request body must include title and description.",
+					{},
+				);
+				return;
+			}
+
+			const newTodo = await Todo.create(this.sql, todoProps);
+
+			res.send(
+				StatusCode.Created,
+				"Todo created successfully!",
+				newTodo.props,
+			);
+		} catch (error) {
+			console.error("Error creating todo:", error);
+			res.send(StatusCode.BadRequest, "Failed to create todo", {
+				error: String(error),
+			});
+		}
+	};
 	/**
 	 * TODO: This method should be called when a PUT request is made to /todos/:id.
 	 * It should update an existing todo in the database and send it as a response.
@@ -84,7 +205,34 @@ export default class TodoController {
 	 * @example PUT /todos/1 { "title": "Updated title", "dueAt": "2022-12-31" }
 	 */
 	updateTodo = async (req: Request<TodoProps>, res: Response) => {
-		res.send(StatusCode.OK, "Todo updated!", {});
+		try {
+			const id = req.getId();
+
+			if (isNaN(Number(id))) {
+				res.send(StatusCode.BadRequest, "Invalid ID", {});
+				return;
+			}
+
+			const todo = await Todo.read(this.sql, id);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Todo not found", {
+					error: `Todo with id ${id} not found`,
+				});
+				return;
+			}
+
+			const updateProps = req.props as Partial<TodoProps>;
+
+			await todo.update(updateProps);
+
+			res.send(StatusCode.OK, "Todo updated successfully!", todo.props);
+		} catch (error) {
+			console.error("Error updating todo:", error);
+			res.send(StatusCode.BadRequest, "Failed to update todo", {
+				error: String(error),
+			});
+		}
 	};
 
 	/**
@@ -97,7 +245,30 @@ export default class TodoController {
 	 * @example DELETE /todos/1
 	 */
 	deleteTodo = async (req: Request<TodoProps>, res: Response) => {
-		res.send(StatusCode.OK, "Todo deleted!", {});
+		try {
+			const id = req.getId();
+
+			if (isNaN(Number(id))) {
+				res.send(StatusCode.BadRequest, "Invalid ID", {});
+				return;
+			}
+
+			const todo = await Todo.read(this.sql, id);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+
+			await todo.delete();
+
+			res.send(StatusCode.OK, "Todo deleted successfully!", {});
+		} catch (error) {
+			console.error("Error deleting todo:", error);
+			res.send(StatusCode.NotFound, "Failed to delete todo", {
+				error: String(error),
+			});
+		}
 	};
 
 	/**
@@ -110,7 +281,32 @@ export default class TodoController {
 	 * @example PUT /todos/1/complete
 	 */
 	completeTodo = async (req: Request<TodoProps>, res: Response) => {
-		res.send(StatusCode.OK, "Todo completed!", {});
+		try {
+			const id = req.getId();
+
+			if (isNaN(Number(id))) {
+				res.send(StatusCode.BadRequest, "Invalid ID", {});
+				return;
+			}
+
+			const todo = await Todo.read(this.sql, id);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Todo not found", {
+					error: `Todo with id ${id} not found`,
+				});
+				return;
+			}
+
+			await todo.markComplete();
+
+			res.send(StatusCode.OK, "Todo marked as complete!", todo.props);
+		} catch (error) {
+			console.error("Error updating todo:", error);
+			res.send(StatusCode.BadRequest, "Failed to update todo", {
+				error: String(error),
+			});
+		}
 	};
 
 	/**
@@ -130,4 +326,188 @@ export default class TodoController {
 			typeof props.description === "string"
 		);
 	};
+
+	//-----------------------------------------------------------------------------------------
+	// SubTodo
+	//-----------------------------------------------------------------------------------------
+
+	/**
+	 *
+	 * @param req
+	 * @param res
+	 */
+	createSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
+		try {
+			const id = req.getId();
+			if (isNaN(Number(id))) {
+				res.send(StatusCode.BadRequest, "Invalid ID", {});
+				return;
+			}
+			const todo = await Todo.read(this.sql, id);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+			const subTodoProps = req.props as SubTodoProps;
+			const subTodo = await todo.addSubTodo(subTodoProps);
+
+			res.send(
+				StatusCode.Created,
+				"SubTodo created successfully!",
+				subTodo.props,
+			);
+		} catch (error) {
+			// console.error("Error creating todo:", error);
+			res.send(StatusCode.BadRequest, "", { error: String(error) });
+		}
+	};
+	/**
+	 *
+	 * @param req
+	 * @param res
+	 * @returns
+	 */
+	getSubTodoList = async (req: Request<SubTodoProps>, res: Response) => {
+		try {
+			const id = req.getId();
+
+			if (isNaN(Number(id))) {
+				res.send(StatusCode.BadRequest, "Invalid ID", {});
+				return;
+			}
+			const todo = await Todo.read(this.sql, id);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+			const subTodos = await todo.listSubTodos();
+
+			res.send(
+				StatusCode.OK,
+				"SubTodo list retrieved",
+				subTodos.map((subTodo) => subTodo.props),
+			);
+		} catch (error) {
+			res.send(StatusCode.NotFound, "Not found", {
+				error: String(error),
+			});
+		}
+	};
+	/**
+	 *
+	 * @param req
+	 * @param res
+	 * @returns
+	 */
+	getSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
+		try {
+			const todoId = req.getId();
+			const subTodoId = req.getSubTodoId();
+
+			if (isNaN(Number(todoId))) {
+				res.send(StatusCode.BadRequest, "Invalid todo ID", {});
+				return;
+			}
+			const todo = await Todo.read(this.sql, todoId);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+
+			if (isNaN(Number(subTodoId))) {
+				res.send(StatusCode.BadRequest, "Invalid subtodo ID", {});
+				return;
+			}
+
+			const subTodo = await todo.readSubTodo(subTodoId);
+			res.send(StatusCode.OK, "SubTodo retrieved", subTodo.props);
+		} catch (error) {
+			res.send(StatusCode.NotFound, "Not found", {
+				error: String(error),
+			});
+		}
+	};
+	/**
+	 *
+	 * @param req
+	 * @param res
+	 */
+	updateSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
+		try {
+			const todoId = req.getId();
+			const subTodoId = req.getSubTodoId();
+
+			if (isNaN(Number(todoId))) {
+				res.send(StatusCode.BadRequest, "Invalid todo ID", {});
+				return;
+			}
+			const todo = await Todo.read(this.sql, todoId);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+
+			if (isNaN(Number(subTodoId))) {
+				res.send(StatusCode.BadRequest, "Invalid subtodo ID", {});
+				return;
+			}
+			const subTodo = await todo.readSubTodo(subTodoId);
+			const updateProps = req.props as Partial<SubTodoProps>;
+			await subTodo.updateSubTodo(updateProps, todoId);
+			res.send(
+				StatusCode.OK,
+				"SubTodo updated successfully!",
+				subTodo.props,
+			);
+		} catch (error) {
+			console.error("Error updating todo:", error);
+			res.send(StatusCode.BadRequest, "Failed to update todo", {
+				error: String(error),
+			});
+		}
+	};
+
+	/**
+	 *
+	 * @param req
+	 * @param res
+	 */
+	deleteSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
+		try {
+			const todoId = req.getId();
+			const subTodoId = req.getSubTodoId();
+
+			if (isNaN(Number(todoId))) {
+				res.send(StatusCode.BadRequest, "Invalid todo ID", {});
+				return;
+			}
+			const todo = await Todo.read(this.sql, todoId);
+
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+
+			if (isNaN(Number(subTodoId))) {
+				res.send(StatusCode.BadRequest, "Invalid subtodo ID", {});
+				return;
+			}
+
+			await todo.removeSubTodo(subTodoId);
+
+			res.send(StatusCode.OK, "SubTodo deleted successfully!", {});
+		} catch (error) {
+			res.send(StatusCode.NotFound, "Not found", {
+				error: String(error),
+			});
+		}
+	};
+	/**
+	 *
+	 */
+	completeSubTodo = async (req: Request<SubTodoProps>, res: Response) => {};
 }

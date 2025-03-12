@@ -91,6 +91,12 @@ export default class Server {
 				console.error(message);
 				response.send(StatusCode.InternalServerError, message);
 			}
+		}else {
+			// if no handler found, response 404
+			response.send(StatusCode.NotFound,
+				`Invalid route: ${req.method} ${req.url}`,
+				{}
+			);
 		}
 	};
 

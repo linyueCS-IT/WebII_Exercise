@@ -1,6 +1,9 @@
 import postgres from "postgres";
 import Server from "./src/Server";
 import { HttpResponse, makeHttpRequest } from "./tests/client";
+import { time } from "console";
+import { title } from "process";
+import Todo from "./src/models/Todo";
 
 /**
  * Only use this if your tests are running slowly
@@ -21,8 +24,33 @@ const main = async () => {
 	await server.start();
 
 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
+		// "GET",
+		// "/todos",
+		// "GET",
+		// "/todos/2",
+		// "POST",
+		// "/todos",
+		// {
+		// 	title : "webII",
+		// 	description : "assignment"
+		// },
+		// "PUT",
+		// "/todos/1",
+		// {
+		// 	title : "app dev",
+		// 	description : "project"
+		// }
+		// "DELETE",
+		// "/todos/1"
+		// "POST",
+		// "/todos/1/subtodos",
+		// {
+		// 	title: "Test SubTodo3",
+		// 	status: "incomplete",
+		// 	createdAt: new Date(),
+		// }
 		"GET",
-		"/todos",
+		"/todos/1/subtodos",
 	);
 
 	console.log(statusCode, body);

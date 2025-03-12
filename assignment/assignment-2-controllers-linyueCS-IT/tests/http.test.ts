@@ -1,9 +1,10 @@
 import postgres from "postgres";
 import Todo, { TodoProps } from "../src/models/Todo";
-// import { SubTodoProps } from "../src/models/SubTodo";
+import { SubTodoProps } from "../src/models/SubTodo";
 import Server from "../src/Server";
 import { StatusCode } from "../src/router/Response";
 import { HttpResponse, makeHttpRequest } from "./client";
+
 
 describe("Todo HTTP operations", () => {
 	const sql = postgres({
@@ -333,159 +334,159 @@ describe("Todo HTTP operations", () => {
 
 	// TODO: Uncomment the following tests if implementing SubTodo functionality.
 
-	// test("SubTodo was added to the Todo.", async () => {
-	// 	const todo = await createTodo();
-	// 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
-	// 		"POST",
-	// 		`/todos/${todo.props.id}/subtodos`,
-	// 		{
-	// 			title: "Test SubTodo",
-	// 			status: "incomplete",
-	// 			createdAt: new Date(),
-	// 		},
-	// 	);
+	test("SubTodo was added to the Todo.", async () => {
+		const todo = await createTodo();
+		const { statusCode, body }: HttpResponse = await makeHttpRequest(
+			"POST",
+			`/todos/${todo.props.id}/subtodos`,
+			{
+				title: "Test SubTodo",
+				status: "incomplete",
+				createdAt: new Date(),
+			},
+		);
 
-	// 	expect(statusCode).toBe(StatusCode.Created);
-	// 	expect(body.message).toBe("SubTodo created successfully!");
-	// 	expect(Object.keys(body.payload).includes("id")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("title")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("status")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("createdAt")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("todoId")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("description")).toBe(false);
-	// 	expect(body.payload.title).toBe("Test SubTodo");
-	// 	expect(body.payload.status).toBe("incomplete");
-	// 	expect(body.payload.todoId).toBe(todo.props.id);
-	// });
+		expect(statusCode).toBe(StatusCode.Created);
+		expect(body.message).toBe("SubTodo created successfully!");
+		expect(Object.keys(body.payload).includes("id")).toBe(true);
+		expect(Object.keys(body.payload).includes("title")).toBe(true);
+		expect(Object.keys(body.payload).includes("status")).toBe(true);
+		expect(Object.keys(body.payload).includes("createdAt")).toBe(true);
+		expect(Object.keys(body.payload).includes("todoId")).toBe(true);
+		expect(Object.keys(body.payload).includes("description")).toBe(false);
+		expect(body.payload.title).toBe("Test SubTodo");
+		expect(body.payload.status).toBe("incomplete");
+		expect(body.payload.todoId).toBe(todo.props.id);
+	});
 
-	// test("SubTodos were listed for the Todo.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodoProps: SubTodoProps = {
-	// 		title: "SubTodo 1",
-	// 		status: "incomplete",
-	// 		createdAt: new Date(),
-	// 		todoId: todo.props.id!,
-	// 	};
+	test("SubTodos were listed for the Todo.", async () => {
+		const todo = await createTodo();
+		const subTodoProps: SubTodoProps = {
+			title: "SubTodo 1",
+			status: "incomplete",
+			createdAt: new Date(),
+			todoId: todo.props.id!,
+		};
 
-	// 	todo.addSubTodo(subTodoProps);
+		todo.addSubTodo(subTodoProps);
 
-	// 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
-	// 		"GET",
-	// 		`/todos/${todo.props.id}/subtodos`,
-	// 	);
+		const { statusCode, body }: HttpResponse = await makeHttpRequest(
+			"GET",
+			`/todos/${todo.props.id}/subtodos`,
+		);
 
-	// 	expect(statusCode).toBe(StatusCode.OK);
-	// 	expect(body.message).toBe("SubTodo list retrieved");
-	// 	expect(body.payload).toBeInstanceOf(Array);
-	// 	expect(body.payload[0].title).toBe(subTodoProps.title);
-	// 	expect(body.payload[0].status).toBe(subTodoProps.status);
-	// 	expect(body.payload[0].createdAt).toBe(
-	// 		subTodoProps.createdAt.toISOString(),
-	// 	);
-	// 	expect(body.payload[0].todoId).toBe(subTodoProps.todoId);
-	// });
+		expect(statusCode).toBe(StatusCode.OK);
+		expect(body.message).toBe("SubTodo list retrieved");
+		expect(body.payload).toBeInstanceOf(Array);
+		expect(body.payload[0].title).toBe(subTodoProps.title);
+		expect(body.payload[0].status).toBe(subTodoProps.status);
+		expect(body.payload[0].createdAt).toBe(
+			subTodoProps.createdAt.toISOString(),
+		);
+		expect(body.payload[0].todoId).toBe(subTodoProps.todoId);
+	});
 
-	// test("SubTodo was retrieved.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodoProps: SubTodoProps = {
-	// 		title: "SubTodo 1",
-	// 		status: "incomplete",
-	// 		createdAt: new Date(),
-	// 		todoId: todo.props.id!,
-	// 	};
+	test("SubTodo was retrieved.", async () => {
+		const todo = await createTodo();
+		const subTodoProps: SubTodoProps = {
+			title: "SubTodo 1",
+			status: "incomplete",
+			createdAt: new Date(),
+			todoId: todo.props.id!,
+		};
 
-	// 	todo.addSubTodo(subTodoProps);
+		todo.addSubTodo(subTodoProps);
 
-	// 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
-	// 		"GET",
-	// 		`/todos/${todo.props.id}/subtodos/1`,
-	// 	);
+		const { statusCode, body }: HttpResponse = await makeHttpRequest(
+			"GET",
+			`/todos/${todo.props.id}/subtodos/1`,
+		);
 
-	// 	expect(statusCode).toBe(StatusCode.OK);
-	// 	expect(body.message).toBe("SubTodo retrieved");
-	// 	expect(body.payload).not.toBeInstanceOf(Array);
-	// 	expect(Object.keys(body.payload).includes("id")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("title")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("status")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("createdAt")).toBe(true);
-	// 	expect(Object.keys(body.payload).includes("todoId")).toBe(true);
-	// 	expect(body.payload.title).toBe(subTodoProps.title);
-	// 	expect(body.payload.status).toBe(subTodoProps.status);
-	// 	expect(body.payload.createdAt).toBe(
-	// 		subTodoProps.createdAt.toISOString(),
-	// 	);
-	// 	expect(body.payload.todoId).toBe(subTodoProps.todoId);
-	// });
+		expect(statusCode).toBe(StatusCode.OK);
+		expect(body.message).toBe("SubTodo retrieved");
+		expect(body.payload).not.toBeInstanceOf(Array);
+		expect(Object.keys(body.payload).includes("id")).toBe(true);
+		expect(Object.keys(body.payload).includes("title")).toBe(true);
+		expect(Object.keys(body.payload).includes("status")).toBe(true);
+		expect(Object.keys(body.payload).includes("createdAt")).toBe(true);
+		expect(Object.keys(body.payload).includes("todoId")).toBe(true);
+		expect(body.payload.title).toBe(subTodoProps.title);
+		expect(body.payload.status).toBe(subTodoProps.status);
+		expect(body.payload.createdAt).toBe(
+			subTodoProps.createdAt.toISOString(),
+		);
+		expect(body.payload.todoId).toBe(subTodoProps.todoId);
+	});
 
-	// test("SubTodo was updated.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodoProps: SubTodoProps = {
-	// 		title: "SubTodo 1",
-	// 		status: "incomplete",
-	// 		createdAt: new Date(),
-	// 		todoId: todo.props.id!,
-	// 	};
+	test("SubTodo was updated.", async () => {
+		const todo = await createTodo();
+		const subTodoProps: SubTodoProps = {
+			title: "SubTodo 1",
+			status: "incomplete",
+			createdAt: new Date(),
+			todoId: todo.props.id!,
+		};
 
-	// 	todo.addSubTodo(subTodoProps);
+		todo.addSubTodo(subTodoProps);
 
-	// 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
-	// 		"PUT",
-	// 		`/todos/${todo.props.id}/subtodos/1`,
-	// 		{
-	// 			title: "Updated Test SubTodo",
-	// 		},
-	// 	);
+		const { statusCode, body }: HttpResponse = await makeHttpRequest(
+			"PUT",
+			`/todos/${todo.props.id}/subtodos/1`,
+			{
+				title: "Updated Test SubTodo",
+			},
+		);
 
-	// 	expect(statusCode).toBe(StatusCode.OK);
-	// 	expect(body.message).toBe("SubTodo updated successfully!");
-	// 	expect(body.payload.title).toBe("Updated Test SubTodo");
-	// 	expect(body.payload.status).toBe("incomplete");
-	// 	expect(body.payload.createdAt).not.toBeNull();
-	// 	expect(body.payload.editedAt).not.toBeNull();
-	// 	expect(body.payload.todoId).toBe(todo.props.id);
-	// 	expect(Object.keys(body.payload).includes("description")).toBe(false);
-	// });
+		expect(statusCode).toBe(StatusCode.OK);
+		expect(body.message).toBe("SubTodo updated successfully!");
+		expect(body.payload.title).toBe("Updated Test SubTodo");
+		expect(body.payload.status).toBe("incomplete");
+		expect(body.payload.createdAt).not.toBeNull();
+		expect(body.payload.editedAt).not.toBeNull();
+		expect(body.payload.todoId).toBe(todo.props.id);
+		expect(Object.keys(body.payload).includes("description")).toBe(false);
+	});
 
-	// test("SubTodo was deleted.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodoProps: SubTodoProps = {
-	// 		title: "SubTodo 1",
-	// 		status: "incomplete",
-	// 		createdAt: new Date(),
-	// 		todoId: todo.props.id!,
-	// 	};
+	test("SubTodo was deleted.", async () => {
+		const todo = await createTodo();
+		const subTodoProps: SubTodoProps = {
+			title: "SubTodo 1",
+			status: "incomplete",
+			createdAt: new Date(),
+			todoId: todo.props.id!,
+		};
 
-	// 	todo.addSubTodo(subTodoProps);
+		todo.addSubTodo(subTodoProps);
 
-	// 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
-	// 		"DELETE",
-	// 		`/todos/${todo.props.id}/subtodos/1`,
-	// 	);
+		const { statusCode, body }: HttpResponse = await makeHttpRequest(
+			"DELETE",
+			`/todos/${todo.props.id}/subtodos/1`,
+		);
 
-	// 	expect(statusCode).toBe(StatusCode.OK);
-	// 	expect(body.message).toBe("SubTodo deleted successfully!");
-	// 	expect(body.payload).toMatchObject({});
-	// });
+		expect(statusCode).toBe(StatusCode.OK);
+		expect(body.message).toBe("SubTodo deleted successfully!");
+		expect(body.payload).toMatchObject({});
+	});
 
-	// test("SubTodo was marked as complete.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodoProps: SubTodoProps = {
-	// 		title: "SubTodo 1",
-	// 		status: "incomplete",
-	// 		createdAt: new Date(),
-	// 		todoId: todo.props.id!,
-	// 	};
+	test("SubTodo was marked as complete.", async () => {
+		const todo = await createTodo();
+		const subTodoProps: SubTodoProps = {
+			title: "SubTodo 1",
+			status: "incomplete",
+			createdAt: new Date(),
+			todoId: todo.props.id!,
+		};
 
-	// 	todo.addSubTodo(subTodoProps);
+		todo.addSubTodo(subTodoProps);
 
-	// 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
-	// 		"PUT",
-	// 		`/todos/${todo.props.id}/subtodos/1/complete`,
-	// 	);
+		const { statusCode, body }: HttpResponse = await makeHttpRequest(
+			"PUT",
+			`/todos/${todo.props.id}/subtodos/1/complete`,
+		);
 
-	// 	expect(statusCode).toBe(StatusCode.OK);
-	// 	expect(body.message).toBe("SubTodo marked as complete!");
-	// 	expect(body.payload.status).toBe("complete");
-	// 	expect(body.payload.completedAt).not.toBeNull();
-	// });
+		expect(statusCode).toBe(StatusCode.OK);
+		expect(body.message).toBe("SubTodo marked as complete!");
+		expect(body.payload.status).toBe("complete");
+		expect(body.payload.completedAt).not.toBeNull();
+	});
 });
