@@ -44,15 +44,15 @@ export default class TodoController {
 		router.get("/todos/:todoId/subtodos", this.getSubTodoList);
 		// GET - get one subTodo through todo id
 		router.get("/todos/:todoId/subtodos/:subTodoId", this.getSubTodo);
-		// PUT - update subTodo through todo id
-		router.put("/todos/:todoId/subtodos/:subTodoId", this.updateSubTodo);
+		// // PUT - update subTodo through todo id
+		// router.put("/todos/:todoId/subtodos/:subTodoId", this.updateSubTodo);
 		// DELETE - delete subTodo
 		router.del("/todos/:todoId/subtodos/:subTodoId", this.deleteSubTodo);
 		// PUT - mark subTodo complete
-		router.put(
-			"/todos/:todoId/subtodos/:subTodoId/complete",
-			this.completeSubTodo,
-		);
+		// router.put(
+		// 	"/todos/:todoId/subtodos/:subTodoId/complete",
+		// 	this.completeSubTodo,
+		// );
 	}
 
 	/**
@@ -435,41 +435,37 @@ export default class TodoController {
 	 * @param req
 	 * @param res
 	 */
-	updateSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
-		try {
-			const todoId = req.getId();
-			const subTodoId = req.getSubTodoId();
+	// updateSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
+	// 	try {
+	// 		const todoId = req.getId();
+	// 		const subTodoId = req.getSubTodoId();
+	
+	// 		if (isNaN(Number(todoId)) || isNaN(Number(subTodoId))) {
+	// 			res.send(StatusCode.BadRequest, "Invalid todo ID", {});
+	// 			return;
+	// 		}
+	
+	// 		const todo = await Todo.read(this.sql, todoId);
 
-			if (isNaN(Number(todoId))) {
-				res.send(StatusCode.BadRequest, "Invalid todo ID", {});
-				return;
-			}
-			const todo = await Todo.read(this.sql, todoId);
-
-			if (!todo) {
-				res.send(StatusCode.NotFound, "Not found", {});
-				return;
-			}
-
-			if (isNaN(Number(subTodoId))) {
-				res.send(StatusCode.BadRequest, "Invalid subtodo ID", {});
-				return;
-			}
-			const subTodo = await todo.readSubTodo(subTodoId);
-			const updateProps = req.props as Partial<SubTodoProps>;
-			await subTodo.updateSubTodo(updateProps, todoId);
-			res.send(
-				StatusCode.OK,
-				"SubTodo updated successfully!",
-				subTodo.props,
-			);
-		} catch (error) {
-			console.error("Error updating todo:", error);
-			res.send(StatusCode.BadRequest, "Failed to update todo", {
-				error: String(error),
-			});
-		}
-	};
+	// 		if (!todo) {
+	// 			res.send(StatusCode.NotFound, "Not found", {});
+	// 			return;
+	// 		}
+	// 		const subTodo = await todo.readSubTodo(subTodoId);
+	// 		const updateProps = req.props as Partial<SubTodoProps>;
+	// 		await subTodo.updateSubTodo(updateProps, todoId);
+	// 		res.send(
+	// 			StatusCode.OK,
+	// 			"SubTodo updated successfully!",
+	// 			subTodo.props,
+	// 		);
+	// 	} catch (error) {
+	// 		console.error("Error updating todo:", error);
+	// 		res.send(StatusCode.BadRequest, "Failed to update todo", {
+	// 			error: String(error),
+	// 		});
+	// 	}
+	// };
 
 	/**
 	 *

@@ -24,24 +24,33 @@ const main = async () => {
 	await server.start();
 
 	const { statusCode, body }: HttpResponse = await makeHttpRequest(
+		// -----get todos----
 		// "GET",
 		// "/todos",
+		// -----get todo----		
 		// "GET",
 		// "/todos/2",
+		// -----post todo----
 		// "POST",
 		// "/todos",
 		// {
-		// 	title : "webII",
+		// 	title : "webIII",
 		// 	description : "assignment"
 		// },
+		// -----update todo----
 		// "PUT",
 		// "/todos/1",
 		// {
 		// 	title : "app dev",
 		// 	description : "project"
 		// }
+		// -----update todo complete ----
+		// "PUT",
+		// "/todos/1/complete",
+		// -----delete todo ----
 		// "DELETE",
 		// "/todos/1"
+		// -----post subTodo----
 		// "POST",
 		// "/todos/1/subtodos",
 		// {
@@ -49,8 +58,20 @@ const main = async () => {
 		// 	status: "incomplete",
 		// 	createdAt: new Date(),
 		// }
-		"GET",
-		"/todos/1/subtodos",
+		// -----get subtodos----
+		// "GET",
+		// "/todos/1/subtodos",
+		// -----get subtodo----
+		// -----put subtodo complete----
+		// "PUT",
+		// "/todos/1/subtodos/1/complete",	
+		// -----put subtodo complete----
+		"PUT",
+		"/todos/1/subtodos/1",
+		{
+			title: "Updated Test SubTodo"
+		}			
+			
 	);
 
 	console.log(statusCode, body);

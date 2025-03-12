@@ -5,6 +5,7 @@ import Router from "./router/Router";
 import TodoController from "./controllers/TodoController";
 import postgres from "postgres";
 import { TodoProps } from "./models/Todo";
+import SubTodoController from "./controllers/SubTodoController";
 
 /**
  * Options for creating a new Server instance.
@@ -29,6 +30,8 @@ export default class Server {
 	private sql: postgres.Sql;
 	private router: Router;
 	private todoController: TodoController;
+	// add
+	private subController: SubTodoController;
 
 	/**
 	 * Initializes a new Server instance. The server is not started until the `start` method is called.
@@ -41,8 +44,12 @@ export default class Server {
 		this.port = serverOptions.port;
 		this.router = new Router();
 		this.todoController = new TodoController(this.sql);
+		// add
+		this.subController = new SubTodoController(this.sql)
 
 		this.todoController.registerRoutes(this.router);
+		// add 
+		this.subController.registerRoutes(this.router);
 
 		this.router.get("/", (req: Request, res: Response) => {
 			res.send(StatusCode.OK, "Homepage!", {});

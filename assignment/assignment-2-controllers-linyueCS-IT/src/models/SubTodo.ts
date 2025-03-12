@@ -35,18 +35,33 @@ export default class SubTodo {
 	 * Marks a subTodo as complete in the database.
 	 *
 	 */
-	async markComplete(): Promise<void> {
-		await this.sql`
+	// async markComplete(): Promise<void> {
+	// 	await this.sql`
+    //         UPDATE subtodos
+    //         SET 
+    //         status = 'complete', created_at = ${new Date()}
+    //         WHERE id = ${this.props.id} 
+    //         RETURNING *
+    //     `;
+	// 	// Update the local subProps
+	// 	this.props.status = "complete";
+	// 	this.props.createdAt = new Date();
+	// 	console.log(`${this.props.title}'s status is ${this.props.status}`);
+	// }
+
+	async markComplete(todoId: Number): Promise<void> {
+		const [row] = await this.sql`
             UPDATE subtodos
             SET 
             status = 'complete', created_at = ${new Date()}
-            WHERE id = ${this.props.id} 
+            todo_id = ${todoId} and id = ${this.props.id}
             RETURNING *
         `;
 		// Update the local subProps
-		this.props.status = "complete";
-		this.props.createdAt = new Date();
-		console.log(`${this.props.title}'s status is ${this.props.status}`);
+		// this.props.status = "complete";
+		// this.props.createdAt = new Date();
+		// console.log(`${this.props.title}'s status is ${this.props.status}`);
+		this.props = { ...this.props, ...convertToCase(snakeToCamel, row) };
 	}
 	async updateSubTodo(updateProps: Partial<SubTodoProps>, todoId: number) {
 		const [row] = await this.sql`

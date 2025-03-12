@@ -98,8 +98,7 @@ export default class Todo {
 				};
 				// if columnMap[sortBy] is false, default "created_at";
 				const columnName = columnMap[sortBy] || "created_at";
-				const order =
-					sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC";
+				const order = sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC";
 				query = sql`${query} ORDER BY ${sql(columnName)} ${sql.unsafe(order)}`;
 			}
 			let rows = await query;
@@ -239,18 +238,5 @@ export default class Todo {
 			this.sql,
 			convertToCase(snakeToCamel, subTodos) as SubTodoProps,
 		);
-	}
-	async updateSubTodo(
-		subTodoId: number,
-		updateProps: Partial<SubTodoProps>,
-	): Promise<SubTodo> {
-		return await this.sql.begin(async (sql) => {
-			const subTodo = await this.readSubTodo(subTodoId);
-			if (!subTodo) {
-				throw new Error("SubTodo not found");
-			}
-			await subTodo.updateSubTodo(updateProps, subTodoId);
-			return subTodo;
-		});
 	}
 }

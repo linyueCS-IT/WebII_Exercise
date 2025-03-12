@@ -5,6 +5,7 @@ import Response, { StatusCode } from "../router/Response";
 import Router from "../router/Router";
 import { SubTodoProps } from "../models/SubTodo";
 
+
 /**
  * Controller for handling SubTodo CRUD operations.
  * Routes are registered in the `registerRoutes` method.
@@ -17,18 +18,73 @@ export default class SubTodoController {
 		this.sql = sql;
 	}
 
-	registerRouter(router: Router<SubTodoProps>) {
-		// PUT - update status
-		router.put("/subTodos", this.completeSubTodo);
+	registerRoutes(router: Router<SubTodoProps>) {
+		// PUT - update status complete
+		router.put("/todos/:todoId/subtodos/:subTodoId/complete", this.completeSubTodo);
+		// PUT - update subTodo through todo id
+		router.put("/todos/:todoId/subtodos/:subTodoId", this.updateSubTodo);
 	}
 
 	completeSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
-		const id = req.getId();
+		try{
+			const subTodoId = req.getSubTodoId();
+			const todoId = req.getId();
+	
+			if (isNaN(Number(todoId)) || isNaN(Number(subTodoId))) {
+				res.send(StatusCode.BadRequest, "Invalid todo ID", {});
+				return;
+			}
+	
+			const todo = await Todo.read(this.sql, todoId);
+	
+			if (!todo){
+				res.send(StatusCode.NotFound,"Not found todo", {});
+				return;
+			}
+	
+			const subTodo = await todo.readSubTodo(subTodoId);
+	
+			// if (!subTodo){
+			// 	res.send(StatusCode.NotFound,"Not found todo", {});
+			// 	return;
+			// }
+			
+			await subTodo.markComplete(todoId);	
+			res.send(StatusCode.OK,"SubTodo marked as complete!",subTodo.props.status);
+		}catch(error){
+			console.error("Error updating todo:", error);
+			res.send(StatusCode.BadRequest,"Failed to update subTodo");
+		}	
+	}
+	updateSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
+		try {
+			const todoId = req.getId();
+			const subTodoId = req.getSubTodoId();
+	
+			if (isNaN(Number(todoId)) || isNaN(Number(subTodoId))) {
+				res.send(StatusCode.BadRequest, "Invalid todo ID", {});
+				return;
+			}
+	
+			const todo = await Todo.read(this.sql, todoId);
 
-		if (isNaN(Number(id))) {
-			res.send(StatusCode.BadRequest, "Invalid ID", {});
+			if (!todo) {
+				res.send(StatusCode.NotFound, "Not found", {});
+				return;
+			}
+			const subTodo = await todo.readSubTodo(subTodoId);
+			const updateProps = req.props as Partial<SubTodoProps>;
+			await subTodo.updateSubTodo(updateProps, todoId);
+			res.send(
+				StatusCode.OK,
+				"SubTodo updated successfully!",
+				subTodo.props,
+			);
+		} catch (error) {
+			console.error("Error updating todo:", error);
+			res.send(StatusCode.BadRequest, "Failed to update todo", {
+				error: String(error),
+			});
 		}
-
-		// const subTodo = await
 	};
 }
