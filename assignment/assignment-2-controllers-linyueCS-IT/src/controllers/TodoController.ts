@@ -55,6 +55,9 @@ export default class TodoController {
 		// );
 	}
 
+	//===========================================================================================
+	// Todo part
+	//===========================================================================================
 	/**
 	 * TODO: Part 1: This method should be called when a GET request is made to /todos.
 	 * It should retrieve all todos from the database and send them as a response.
@@ -327,14 +330,17 @@ export default class TodoController {
 		);
 	};
 
-	//-----------------------------------------------------------------------------------------
-	// SubTodo
-	//-----------------------------------------------------------------------------------------
+	//===========================================================================================
+	// SubTodo part
+	//===========================================================================================
 
 	/**
-	 *
-	 * @param req
-	 * @param res
+	 * Creates a new SubTodo and associates it with a Todo item.
+	 * @param reqThe request object containing the properties of the SubTodo to be created.
+	 * The "props" field should contain the "SubTodo" properties to be added, and the ID of the parent "Todo" is extracted from the request.
+	 * @param res The response object used to send the status and response data back to the client.
+	 * @returns {Promise<void>} A promise that resolves when the SubTodo is successfully created, or if an error occurs.
+	 * @example POST /todos/1/subtodos
 	 */
 	createSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
 		try {
@@ -363,10 +369,13 @@ export default class TodoController {
 		}
 	};
 	/**
+	 * Retrieves the list of SubTodos associated with a specific Todo.
 	 *
-	 * @param req
-	 * @param res
-	 * @returns
+	 * @param {Request<SubTodoProps>} req - The request object containing the "id" of the parent Todo item. The "id" is used to
+	 * identify which Todo's SubTodos should be retrieved.
+	 * @param {Response} res - The response object used to send the status and response data back to the client.
+	 * @example GET /todos/1/subtodos
+	 * @returns {Promise<void>} A promise that resolves when the list of SubTodos is successfully retrieved, or if an error occurs.
 	 */
 	getSubTodoList = async (req: Request<SubTodoProps>, res: Response) => {
 		try {
@@ -396,10 +405,13 @@ export default class TodoController {
 		}
 	};
 	/**
+	 * Retrieves a specific SubTodo associated with a given Todo.
 	 *
-	 * @param req
-	 * @param res
-	 * @returns
+	 * @param {Request<SubTodoProps>} req - The request object containing the "todoId" and "subTodoId"used to identify the specific
+	 * "SubTodo" to retrieve. The "todoId" corresponds to the parent `Todo` item, and the "subTodoId" corresponds to the specific "SubTodo".
+	 * @param {Response} res - The response object used to send the status and response data back to the client.
+	 * @example GET /todos/1/subtodos/1
+	 * @returns {Promise<void>} A promise that resolves when the SubTodo is successfully retrieved, or if an error occurs.
 	 */
 	getSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
 		try {
@@ -430,47 +442,15 @@ export default class TodoController {
 			});
 		}
 	};
-	/**
-	 *
-	 * @param req
-	 * @param res
-	 */
-	// updateSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
-	// 	try {
-	// 		const todoId = req.getId();
-	// 		const subTodoId = req.getSubTodoId();
-	
-	// 		if (isNaN(Number(todoId)) || isNaN(Number(subTodoId))) {
-	// 			res.send(StatusCode.BadRequest, "Invalid todo ID", {});
-	// 			return;
-	// 		}
-	
-	// 		const todo = await Todo.read(this.sql, todoId);
-
-	// 		if (!todo) {
-	// 			res.send(StatusCode.NotFound, "Not found", {});
-	// 			return;
-	// 		}
-	// 		const subTodo = await todo.readSubTodo(subTodoId);
-	// 		const updateProps = req.props as Partial<SubTodoProps>;
-	// 		await subTodo.updateSubTodo(updateProps, todoId);
-	// 		res.send(
-	// 			StatusCode.OK,
-	// 			"SubTodo updated successfully!",
-	// 			subTodo.props,
-	// 		);
-	// 	} catch (error) {
-	// 		console.error("Error updating todo:", error);
-	// 		res.send(StatusCode.BadRequest, "Failed to update todo", {
-	// 			error: String(error),
-	// 		});
-	// 	}
-	// };
 
 	/**
+	 * Deletes a specific SubTodo associated with a given Todo.
 	 *
-	 * @param req
-	 * @param res
+	 * @param {Request<SubTodoProps>} req - The request object containing the `todoId` and `subTodoId` used to identify the specific
+	 * `SubTodo` to delete. The `todoId` corresponds to the parent `Todo` item, and the `subTodoId` corresponds to the specific `SubTodo`.
+	 * @param {Response} res - The response object used to send the status and response data back to the client.
+	 * @example DELETE /todos/1/subtodos/1
+	 * @returns {Promise<void>} A promise that resolves when the SubTodo is successfully deleted, or if an error occurs.
 	 */
 	deleteSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
 		try {

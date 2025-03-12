@@ -30,7 +30,7 @@ export default class Server {
 	private sql: postgres.Sql;
 	private router: Router;
 	private todoController: TodoController;
-	// add
+	// add subController
 	private subController: SubTodoController;
 
 	/**
@@ -43,12 +43,13 @@ export default class Server {
 		this.host = serverOptions.host;
 		this.port = serverOptions.port;
 		this.router = new Router();
+		// create todoController instance
 		this.todoController = new TodoController(this.sql);
-		// add
-		this.subController = new SubTodoController(this.sql)
-
+		// create subTodoController instance
+		this.subController = new SubTodoController(this.sql);
+		// todoController instance call registerRoutes()
 		this.todoController.registerRoutes(this.router);
-		// add 
+		// subTodoController instance call registerRoutes()
 		this.subController.registerRoutes(this.router);
 
 		this.router.get("/", (req: Request, res: Response) => {
@@ -98,11 +99,12 @@ export default class Server {
 				console.error(message);
 				response.send(StatusCode.InternalServerError, message);
 			}
-		}else {
+		} else {
 			// if no handler found, response 404
-			response.send(StatusCode.NotFound,
+			response.send(
+				StatusCode.NotFound,
 				`Invalid route: ${req.method} ${req.url}`,
-				{}
+				{},
 			);
 		}
 	};

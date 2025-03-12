@@ -33,25 +33,31 @@ export default class SubTodo {
 		this.props = props;
 	}
 	/**
-	 * Marks a subTodo as complete in the database.
+	 * Marks a SubTodo as complete by updateSubTodo().
 	 *
+	 * @param {number} todoId - The ID of the parent Todo item associated with the SubTodo to be marked as complete.
+	 *
+	 * @returns {Promise<void>} A promise that resolves once the SubTodo has been marked as complete.
 	 */
 	async markComplete(todoId: number): Promise<void> {
-		// const [row] = await this.sql`
-        //     UPDATE subtodos
-        //     SET 
-        //     status = 'complete', completed_at = ${new Date()}
-		// 	WHERE 
-        //     todo_id = ${todoId} and id = ${this.props.id}
-        //     RETURNING *
-        // `;
-		// // Update the local subProps
-		// this.props.status = "complete";
-		// this.props.completedAt = new Date();
-		// console.log(`${this.props.title}'s status is ${this.props.status}`);
-		// this.props = { ...this.props, ...convertToCase(snakeToCamel, row) };
-		await this.updateSubTodo({ status: "complete", completedAt: new Date()},todoId);
+		await this.updateSubTodo(
+			{ status: "complete", completedAt: new Date() },
+			todoId,
+		);
 	}
+	/**
+	 * Updates a SubTodo record in the database.
+	 *
+	 * This method updates the properties of an existing SubTodo record identified by "todoId" and "id".
+	 * The properties to update are passed as a partial object, and the "edited_at" timestamp is automatically updated to the current date and time.
+	 *
+	 * @param {Partial<SubTodoProps>} updateProps - A partial object containing the properties to update. The keys correspond to the columns of the SubTodo table in camelCase, and the values are the new values to be set.
+	 * @param {number} todoId - The ID of the parent Todo item to which this SubTodo belongs. This is used to filter which SubTodo to update based on the `todoId` and the `id` of the SubTodo.
+	 *
+	 * @throws {Error} Throws an error if the SubTodo is not found or not updated.
+	 *
+	 * @returns {Promise<void>} A promise that resolves once the update operation is completed.
+	 */
 	async updateSubTodo(updateProps: Partial<SubTodoProps>, todoId: number) {
 		const [row] = await this.sql`
 		UPDATE subtodos

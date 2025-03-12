@@ -21,7 +21,12 @@ export default class Todo {
 		public props: TodoProps,
 	) {}
 	/**
+	 * Creates a new Todo item in the database.
 	 *
+	 * @param {postgres.Sql<any>} sql - The SQL object used to interact with the database.
+	 * @param {TodoProps} props - The properties of the "Todo" item to be created. This object is expected to be in camelCase format.
+	 *
+	 * @returns {Promise<Todo>} A promise that resolves to the newly created `Todo` instance with the inserted data.
 	 */
 	static async create(sql: postgres.Sql<any>, props: TodoProps) {
 		const connection = await sql.reserve();
@@ -37,10 +42,12 @@ export default class Todo {
 		return new Todo(sql, convertToCase(snakeToCamel, row) as TodoProps);
 	}
 	/**
+	 * Retrieves a Todo item from the database by its ID.
 	 *
-	 * @param sql
-	 * @param id
-	 * @returns
+	 * @param {postgres.Sql<any>} sql - The SQL object used to interact with the database.
+	 * @param {number} id - The unique identifier of the `Todo` item to retrieve.
+	 *
+	 * @returns {Promise<Todo | null>} A promise that resolves to the "Todo" instance if found, or "null" if no matching "Todo" is found.
 	 */
 	static async read(sql: postgres.Sql<any>, id: number) {
 		const connection = await sql.reserve();
@@ -98,7 +105,8 @@ export default class Todo {
 				};
 				// if columnMap[sortBy] is false, default "created_at";
 				const columnName = columnMap[sortBy] || "created_at";
-				const order = sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC";
+				const order =
+					sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC";
 				query = sql`${query} ORDER BY ${sql(columnName)} ${sql.unsafe(order)}`;
 			}
 			let rows = await query;
@@ -112,10 +120,13 @@ export default class Todo {
 		}
 	}
 	/**
+	 * Updates a Todo item in the database.
 	 *
-	 * @param updateProps
+	 * @param {Partial<TodoProps>} updateProps - The properties to update in the "Todo" item. This object is partial, meaning not all properties
+	 * can be provided. Only the fields that need to be updated should be included.
+	 *
+	 * @returns {Promise<void>} A promise that resolves when the update is complete.
 	 */
-
 	async update(updateProps: Partial<TodoProps>) {
 		const connection = await this.sql.reserve();
 
@@ -134,8 +145,10 @@ export default class Todo {
 		this.props = { ...this.props, ...convertToCase(snakeToCamel, row) };
 	}
 	/**
+	 * Deletes a Todo item from the database.
 	 *
-	 * @returns
+	 * @returns {Promise<boolean>} A promise that resolves to true if the Todo was successfully deleted, or false if no rows were
+	 * deleted (indicating the "Todo" was not found or there was an issue with the deletion).
 	 */
 	async delete() {
 		const connection = await this.sql.reserve();
@@ -150,7 +163,9 @@ export default class Todo {
 		return result.count === 1;
 	}
 	/**
+	 * Marks the Todo item as complete.
 	 *
+	 * @returns {Promise<void>} A promise that resolves when the update is complete.
 	 */
 	async markComplete() {
 		await this.update({ status: "complete", completedAt: new Date() });
@@ -226,8 +241,11 @@ export default class Todo {
 		`;
 	}
 	/**
+	 * Retrieves a specific SubTodo associated with the current Todo.
 	 *
-	 * @param subTodoId
+	 * @param {number} subTodoId - The unique identifier of the SubTodo to retrieve.
+	 *
+	 * @returns {Promise<SubTodo>} A promise that resolves to the SubTodo instance created from the retrieved data.
 	 */
 	async readSubTodo(subTodoId: number): Promise<SubTodo> {
 		const [subTodos] = await this.sql`
