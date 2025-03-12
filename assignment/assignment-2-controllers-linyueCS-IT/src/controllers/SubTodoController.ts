@@ -50,7 +50,7 @@ export default class SubTodoController {
 			// }
 			
 			await subTodo.markComplete(todoId);	
-			res.send(StatusCode.OK,"SubTodo marked as complete!",subTodo.props.status);
+			res.send(StatusCode.OK,"SubTodo marked as complete!",subTodo.props);
 		}catch(error){
 			console.error("Error updating todo:", error);
 			res.send(StatusCode.BadRequest,"Failed to update subTodo");

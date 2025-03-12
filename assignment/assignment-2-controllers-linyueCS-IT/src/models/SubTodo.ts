@@ -11,6 +11,7 @@ export interface SubTodoProps {
 	title: string;
 	status: "incomplete" | "complete";
 	createdAt: Date;
+	completedAt?: Date;
 	todoId: number;
 }
 
@@ -35,33 +36,21 @@ export default class SubTodo {
 	 * Marks a subTodo as complete in the database.
 	 *
 	 */
-	// async markComplete(): Promise<void> {
-	// 	await this.sql`
-    //         UPDATE subtodos
-    //         SET 
-    //         status = 'complete', created_at = ${new Date()}
-    //         WHERE id = ${this.props.id} 
-    //         RETURNING *
-    //     `;
-	// 	// Update the local subProps
-	// 	this.props.status = "complete";
-	// 	this.props.createdAt = new Date();
-	// 	console.log(`${this.props.title}'s status is ${this.props.status}`);
-	// }
-
-	async markComplete(todoId: Number): Promise<void> {
-		const [row] = await this.sql`
-            UPDATE subtodos
-            SET 
-            status = 'complete', created_at = ${new Date()}
-            todo_id = ${todoId} and id = ${this.props.id}
-            RETURNING *
-        `;
-		// Update the local subProps
+	async markComplete(todoId: number): Promise<void> {
+		// const [row] = await this.sql`
+        //     UPDATE subtodos
+        //     SET 
+        //     status = 'complete', completed_at = ${new Date()}
+		// 	WHERE 
+        //     todo_id = ${todoId} and id = ${this.props.id}
+        //     RETURNING *
+        // `;
+		// // Update the local subProps
 		// this.props.status = "complete";
-		// this.props.createdAt = new Date();
+		// this.props.completedAt = new Date();
 		// console.log(`${this.props.title}'s status is ${this.props.status}`);
-		this.props = { ...this.props, ...convertToCase(snakeToCamel, row) };
+		// this.props = { ...this.props, ...convertToCase(snakeToCamel, row) };
+		await this.updateSubTodo({ status: "complete", completedAt: new Date()},todoId);
 	}
 	async updateSubTodo(updateProps: Partial<SubTodoProps>, todoId: number) {
 		const [row] = await this.sql`

@@ -63,14 +63,14 @@ const main = async () => {
 		// "/todos/1/subtodos",
 		// -----get subtodo----
 		// -----put subtodo complete----
-		// "PUT",
-		// "/todos/1/subtodos/1/complete",	
-		// -----put subtodo complete----
 		"PUT",
-		"/todos/1/subtodos/1",
-		{
-			title: "Updated Test SubTodo"
-		}			
+		"/todos/1/subtodos/1/complete",	
+		// -----put subtodo complete----
+		// "PUT",
+		// "/todos/1/subtodos/1",
+		// {
+		// 	title: "Updated Test SubTodo"
+		// }			
 			
 	);
 
