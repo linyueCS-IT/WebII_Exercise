@@ -76,23 +76,21 @@ export default class Todo {
 	 * @param @optional sortBy The column to sort by.
 	 * @returns The list of todos.
 	 */
+
 	static async readAll(
 		sql: postgres.Sql<any>,
 		filters?: Partial<TodoProps>,
 		sortBy?: string,
-		sortOrder: "ASC" | "DESC" = "ASC", // Add this parameter as optional, default "ASC"
 	): Promise<Todo[]> {
 		try {
-			// dynamical variable
-			let query = sql<TodoProps[]>`SELECT * FROM todos`;
-
-			// Check filters is not null
-			if (filters && Object.keys(filters).length > 0) {
-				if (filters.status) {
-					query = sql`${query} WHERE status = ${filters.status}`;
-				}
+			let query = sql`SELECT * FROM todos`;
+	
+			// Handle status filter
+			if (filters?.status) {
+				query = sql`${query} WHERE status = ${filters.status}`;
 			}
-			// Check sortBy is not null
+	
+			// Handle sorting safely (without sql.identifier)
 			if (sortBy) {
 				const columnMap: { [key: string]: string } = {
 					createdAt: "created_at",
@@ -103,13 +101,15 @@ export default class Todo {
 					description: "description",
 					status: "status",
 				};
-				// if columnMap[sortBy] is false, default "created_at";
-				const columnName = columnMap[sortBy] || "created_at";
-				const order =
-					sortOrder?.toUpperCase() === "DESC" ? "DESC" : "ASC";
-				query = sql`${query} ORDER BY ${sql(columnName)} ${sql.unsafe(order)}`;
+	
+				const columnName = columnMap[sortBy] || "created_at"; // Default to created_at
+				query = sql`${query} ORDER BY ${sql([columnName])}`;
 			}
-			let rows = await query;
+	
+			// Execute the query
+			const rows = await query;
+	
+			// Convert results
 			return rows.map((row) => {
 				const props = convertToCase(snakeToCamel, row) as TodoProps;
 				return new Todo(sql, props);
@@ -119,6 +119,8 @@ export default class Todo {
 			throw error;
 		}
 	}
+	
+	
 	/**
 	 * Updates a Todo item in the database.
 	 * @param {Partial<TodoProps>} updateProps - The properties to update in the "Todo" item. This object is partial, meaning not all properties

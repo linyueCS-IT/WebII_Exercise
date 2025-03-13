@@ -70,10 +70,6 @@ export default class TodoController {
 			const queryParams = req.getSearchParams();
 			const sortBy = queryParams.get("sortBy") || undefined;
 			const status = queryParams.get("status");
-			// sortOrderRaw is string or null
-			const sortOrderRaw = queryParams.get("sortOrder");
-			//
-			let sortOrder: "ASC" | "DESC" | undefined;
 			const filters: Partial<TodoProps> = {};
 
 			// Validate status if provided
@@ -85,25 +81,11 @@ export default class TodoController {
 				// identified  "complete" | "incomplete"
 				filters.status = status;
 			}
-
-			if (sortOrderRaw === "ASC" || sortOrderRaw === "DESC") {
-				sortOrder = sortOrderRaw;
-			} else if (sortOrderRaw === null) {
-				sortOrder = "ASC";
-			} else {
-				res.send(
-					StatusCode.BadRequest,
-					"Invalid sortOrder, must be 'ASC' or 'DESC'",
-					{},
-				);
-				return;
-			}
-			// Use Todo.readAll() static method to get all todos
+			
 			const todos = await Todo.readAll(
 				this.sql,
 				filters,
 				sortBy,
-				sortOrder,
 			);
 
 			// Send response
@@ -119,7 +101,6 @@ export default class TodoController {
 			});
 		}
 	};
-
 	/**
 	 * TODO: This method should be called when a GET request is made to /todos/:id.
 	 * It should retrieve a single todo from the database and send it as a response.
