@@ -68,7 +68,7 @@ export default class SubTodoController {
 		try {
 			// NOTE: Adding a small delay to handle race condition in the tests
 			// where addSubTodo() is called without await in the http.test.ts
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			// await new Promise((resolve) => setTimeout(resolve, 100));
 			// get subTodo and todo Id from req
 			const subTodoId = req.getSubTodoId();
 			const todoId = req.getId();
@@ -101,7 +101,7 @@ export default class SubTodoController {
 			);
 		} catch (error) {
 			console.error("Error updating todo:", error);
-			res.send(StatusCode.BadRequest, "Failed to update subTodo");
+			res.send(StatusCode.BadRequest, "Failed to update subTodo completed");
 		}
 	};
 	/**
@@ -126,7 +126,7 @@ export default class SubTodoController {
 		try {
 			// NOTE: Adding a small delay to handle race condition in the tests
 			// where addSubTodo() is called without await in the http.test.ts
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			// await new Promise((resolve) => setTimeout(resolve, 100));
 			const todoId = req.getId();
 			const subTodoId = req.getSubTodoId();
 
@@ -159,7 +159,7 @@ export default class SubTodoController {
 			);
 		} catch (error) {
 			console.error("Error updating todo:", error);
-			res.send(StatusCode.BadRequest, "Failed to update todo", {
+			res.send(StatusCode.InternalServerError, "Failed to update subtodo", {
 				error: String(error),
 			});
 		}

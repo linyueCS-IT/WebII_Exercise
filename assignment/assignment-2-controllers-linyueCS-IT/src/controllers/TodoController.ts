@@ -114,7 +114,7 @@ export default class TodoController {
 			);
 		} catch (error) {
 			console.error("Error fetching todos:", error);
-			res.send(StatusCode.BadRequest, "Failed to fetch todos", {
+			res.send(StatusCode.InternalServerError, "Failed to fetch todos", {
 				error: String(error),
 			});
 		}
@@ -148,7 +148,7 @@ export default class TodoController {
 			res.send(StatusCode.OK, "Todo retrieved", todo.props);
 		} catch (error) {
 			console.error("Error fetching todo:", error);
-			res.send(StatusCode.NotFound, "Failed to fetch todo", {
+			res.send(StatusCode.InternalServerError, "Failed to fetch todo", {
 				error: String(error),
 			});
 		}
@@ -185,7 +185,7 @@ export default class TodoController {
 			);
 		} catch (error) {
 			console.error("Error creating todo:", error);
-			res.send(StatusCode.BadRequest, "Failed to create todo", {
+			res.send(StatusCode.InternalServerError, "Failed to create todo", {
 				error: String(error),
 			});
 		}
@@ -226,7 +226,7 @@ export default class TodoController {
 			res.send(StatusCode.OK, "Todo updated successfully!", todo.props);
 		} catch (error) {
 			console.error("Error updating todo:", error);
-			res.send(StatusCode.BadRequest, "Failed to update todo", {
+			res.send(StatusCode.InternalServerError, "Failed to update todo", {
 				error: String(error),
 			});
 		}
@@ -262,7 +262,7 @@ export default class TodoController {
 			res.send(StatusCode.OK, "Todo deleted successfully!", {});
 		} catch (error) {
 			console.error("Error deleting todo:", error);
-			res.send(StatusCode.NotFound, "Failed to delete todo", {
+			res.send(StatusCode.InternalServerError, "Failed to delete todo", {
 				error: String(error),
 			});
 		}
@@ -300,7 +300,7 @@ export default class TodoController {
 			res.send(StatusCode.OK, "Todo marked as complete!", todo.props);
 		} catch (error) {
 			console.error("Error updating todo:", error);
-			res.send(StatusCode.BadRequest, "Failed to update todo", {
+			res.send(StatusCode.InternalServerError, "Failed to update todo", {
 				error: String(error),
 			});
 		}
@@ -359,7 +359,7 @@ export default class TodoController {
 			);
 		} catch (error) {
 			// console.error("Error creating todo:", error);
-			res.send(StatusCode.BadRequest, "", { error: String(error) });
+			res.send(StatusCode.InternalServerError, "Failed to add subtodo", { error: String(error) });
 		}
 	};
 	/**
@@ -392,7 +392,7 @@ export default class TodoController {
 				subTodos.map((subTodo) => subTodo.props),
 			);
 		} catch (error) {
-			res.send(StatusCode.NotFound, "Not found", {
+			res.send(StatusCode.InternalServerError,"Failed to fetch subtodos", {
 				error: String(error),
 			});
 		}
@@ -438,7 +438,7 @@ export default class TodoController {
 
 			res.send(StatusCode.OK, "SubTodo retrieved", subTodo.props);
 		} catch (error) {
-			res.send(StatusCode.NotFound, "Not found", {
+			res.send(StatusCode.InternalServerError, "Failed to fetch subtodo", {
 				error: String(error),
 			});
 		}
@@ -479,7 +479,7 @@ export default class TodoController {
 
 			res.send(StatusCode.OK, "SubTodo deleted successfully!", {});
 		} catch (error) {
-			res.send(StatusCode.NotFound, "Not found", {
+			res.send(StatusCode.InternalServerError, "Failed to delete subtodo", {
 				error: String(error),
 			});
 		}
