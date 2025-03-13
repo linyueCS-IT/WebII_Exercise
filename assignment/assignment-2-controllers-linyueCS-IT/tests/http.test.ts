@@ -5,7 +5,6 @@ import Server from "../src/Server";
 import { StatusCode } from "../src/router/Response";
 import { HttpResponse, makeHttpRequest } from "./client";
 
-
 describe("Todo HTTP operations", () => {
 	const sql = postgres({
 		database: "TodoDB",

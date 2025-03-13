@@ -1,6 +1,6 @@
 import postgres from "postgres";
 import Todo, { TodoProps } from "../src/models/Todo";
-// import { SubTodoProps } from "../src/models/SubTodo";
+import { SubTodoProps } from "../src/models/SubTodo";
 
 describe("Todo CRUD operations", () => {
 	// Set up the connection to the DB.
@@ -206,89 +206,89 @@ describe("Todo CRUD operations", () => {
 
 	// TODO: Uncomment the following tests if implementing SubTodo functionality.
 
-	// test("SubTodo was added to the Todo.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodoProps: SubTodoProps = {
-	// 		title: "Test SubTodo",
-	// 		status: "incomplete",
-	// 		createdAt: new Date(),
-	// 		todoId: todo.props.id!,
-	// 	};
+	test("SubTodo was added to the Todo.", async () => {
+		const todo = await createTodo();
+		const subTodoProps: SubTodoProps = {
+			title: "Test SubTodo",
+			status: "incomplete",
+			createdAt: new Date(),
+			todoId: todo.props.id!,
+		};
 
-	// 	await todo.addSubTodo(subTodoProps);
+		await todo.addSubTodo(subTodoProps);
 
-	// 	const [
-	// 		{
-	// 			props: { title, status, createdAt, todoId },
-	// 		},
-	// 	] = await todo.listSubTodos();
+		const [
+			{
+				props: { title, status, createdAt, todoId },
+			},
+		] = await todo.listSubTodos();
 
-	// 	/*
-	// 	The above is a one operation equivalent to:
-	// 	const subTodos = await todo.listSubTodos();
-	// 	const title = subTodos[0].props.title;
-	// 	const status = subTodos[0].props.status;
-	// 	const createdAt = subTodos[0].props.createdAt;
-	// 	const todoId = subTodos[0].props.todoId;
-	// 	*/
+		/*
+		The above is a one operation equivalent to:
+		const subTodos = await todo.listSubTodos();
+		const title = subTodos[0].props.title;
+		const status = subTodos[0].props.status;
+		const createdAt = subTodos[0].props.createdAt;
+		const todoId = subTodos[0].props.todoId;
+		*/
 
-	// 	expect(title).toBe(subTodoProps.title);
-	// 	expect(status).toBe(subTodoProps.status);
-	// 	expect(createdAt.toLocaleString()).toBe(
-	// 		subTodoProps.createdAt.toLocaleString(),
-	// 	);
-	// 	expect(todoId).toBe(subTodoProps.todoId);
-	// });
+		expect(title).toBe(subTodoProps.title);
+		expect(status).toBe(subTodoProps.status);
+		expect(createdAt.toLocaleString()).toBe(
+			subTodoProps.createdAt.toLocaleString(),
+		);
+		expect(todoId).toBe(subTodoProps.todoId);
+	});
 
-	// test("SubTodo was removed from the Todo.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodoProps: SubTodoProps = {
-	// 		title: "Test SubTodo",
-	// 		status: "incomplete",
-	// 		createdAt: new Date(),
-	// 		todoId: todo.props.id!,
-	// 	};
+	test("SubTodo was removed from the Todo.", async () => {
+		const todo = await createTodo();
+		const subTodoProps: SubTodoProps = {
+			title: "Test SubTodo",
+			status: "incomplete",
+			createdAt: new Date(),
+			todoId: todo.props.id!,
+		};
 
-	// 	const subTodo = await todo.addSubTodo(subTodoProps);
+		const subTodo = await todo.addSubTodo(subTodoProps);
 
-	// 	await todo.removeSubTodo(subTodo.props.id!);
+		await todo.removeSubTodo(subTodo.props.id!);
 
-	// 	const subtodos = await todo.listSubTodos();
+		const subtodos = await todo.listSubTodos();
 
-	// 	expect(subtodos).toHaveLength(0);
-	// });
+		expect(subtodos).toHaveLength(0);
+	});
 
-	// test("SubTodos were listed for the Todo.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodo1 = await todo.addSubTodo({
-	// 		title: "SubTodo 1",
-	// 		status: "incomplete",
-	// 		todoId: todo.props.id!,
-	// 		createdAt: new Date(),
-	// 	});
-	// 	const subTodo2 = await todo.addSubTodo({
-	// 		title: "SubTodo 2",
-	// 		status: "incomplete",
-	// 		todoId: todo.props.id!,
-	// 		createdAt: new Date(),
-	// 	});
-	// 	const subTodos = await todo.listSubTodos();
+	test("SubTodos were listed for the Todo.", async () => {
+		const todo = await createTodo();
+		const subTodo1 = await todo.addSubTodo({
+			title: "SubTodo 1",
+			status: "incomplete",
+			todoId: todo.props.id!,
+			createdAt: new Date(),
+		});
+		const subTodo2 = await todo.addSubTodo({
+			title: "SubTodo 2",
+			status: "incomplete",
+			todoId: todo.props.id!,
+			createdAt: new Date(),
+		});
+		const subTodos = await todo.listSubTodos();
 
-	// 	expect(subTodos).toContainEqual(subTodo1);
-	// 	expect(subTodos).toContainEqual(subTodo2);
-	// });
+		expect(subTodos).toContainEqual(subTodo1);
+		expect(subTodos).toContainEqual(subTodo2);
+	});
 
-	// test("SubTodo was marked as complete.", async () => {
-	// 	const todo = await createTodo();
-	// 	const subTodo = await todo.addSubTodo({
-	// 		title: "SubTodo",
-	// 		status: "incomplete",
-	// 		todoId: todo.props.id!,
-	// 		createdAt: new Date(),
-	// 	});
+	test("SubTodo was marked as complete.", async () => {
+		const todo = await createTodo();
+		const subTodo = await todo.addSubTodo({
+			title: "SubTodo",
+			status: "incomplete",
+			todoId: todo.props.id!,
+			createdAt: new Date(),
+		});
 
-	// 	expect(subTodo.props.status).toBe("incomplete");
-	// 	await subTodo.markComplete();
-	// 	expect(subTodo.props.status).toBe("complete");
-	// });
+		expect(subTodo.props.status).toBe("incomplete");
+		await subTodo.markComplete();
+		expect(subTodo.props.status).toBe("complete");
+	});
 });

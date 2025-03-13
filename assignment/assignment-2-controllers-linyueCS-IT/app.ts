@@ -27,14 +27,14 @@ const main = async () => {
 		// -----get todos----
 		// "GET",
 		// "/todos",
-		// -----get todo----		
+		// -----get todo----
 		// "GET",
 		// "/todos/2",
 		// -----post todo----
 		// "POST",
 		// "/todos",
 		// {
-		// 	title : "webIII",
+		// 	title : "webI",
 		// 	description : "assignment"
 		// },
 		// -----update todo----
@@ -62,16 +62,17 @@ const main = async () => {
 		// "GET",
 		// "/todos/1/subtodos",
 		// -----get subtodo----
+		// "GET",
+		// "/todos/1/subtodos/1",
 		// -----put subtodo complete----
 		"PUT",
-		"/todos/1/subtodos/1/complete",	
+		"/todos/1/subtodos/1/complete",
 		// -----put subtodo complete----
 		// "PUT",
 		// "/todos/1/subtodos/1",
 		// {
 		// 	title: "Updated Test SubTodo"
-		// }			
-			
+		// }
 	);
 
 	console.log(statusCode, body);

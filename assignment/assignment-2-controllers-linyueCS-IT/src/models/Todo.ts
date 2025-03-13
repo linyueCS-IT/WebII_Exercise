@@ -121,10 +121,8 @@ export default class Todo {
 	}
 	/**
 	 * Updates a Todo item in the database.
-	 *
 	 * @param {Partial<TodoProps>} updateProps - The properties to update in the "Todo" item. This object is partial, meaning not all properties
 	 * can be provided. Only the fields that need to be updated should be included.
-	 *
 	 * @returns {Promise<void>} A promise that resolves when the update is complete.
 	 */
 	async update(updateProps: Partial<TodoProps>) {
@@ -146,7 +144,6 @@ export default class Todo {
 	}
 	/**
 	 * Deletes a Todo item from the database.
-	 *
 	 * @returns {Promise<boolean>} A promise that resolves to true if the Todo was successfully deleted, or false if no rows were
 	 * deleted (indicating the "Todo" was not found or there was an issue with the deletion).
 	 */
@@ -164,7 +161,6 @@ export default class Todo {
 	}
 	/**
 	 * Marks the Todo item as complete.
-	 *
 	 * @returns {Promise<void>} A promise that resolves when the update is complete.
 	 */
 	async markComplete() {
@@ -174,11 +170,8 @@ export default class Todo {
 	/**
 	 * Add a subTodo and should be associated with a Todo item
 	 * @param subTodoProps Holds the properties of the SubTodo (like id, title, status, etc.).
-	 *
 	 * @returns The new SubTodo instance. Since this is an async function,
 	 * it returns a Promise that resolves to the new SubTodo instance.
-	 * The reason for this being an async function is that it interacts
-	 * with the database through the sql parameter, whose operations are asynchronous.
 	 */
 	async addSubTodo(subTodoProps: SubTodoProps): Promise<SubTodo> {
 		const [subTodo] = await this.sql`
@@ -188,7 +181,6 @@ export default class Todo {
 			(${subTodoProps.title}, ${subTodoProps.status}, ${new Date()}, ${this.props.id})
 			RETURNING *
 		`;
-		console.log("Add subTodo in db", subTodo);
 		// Covert to Snake Case
 		const subTodoForSnakeCase: any = {};
 
@@ -203,11 +195,8 @@ export default class Todo {
 	}
 	/**
 	 * Retrieves a list of SubTodo base on the id of associated Todo
-	 *
 	 * @returns The a list of SubTodo instances. Since this is an async function,
 	 * it returns a Promise that resolves to the new SubTodo instance.
-	 * The reason for this being an async function is that it interacts
-	 * with the database through the sql parameter, whose operations are asynchronous.
 	 */
 	async listSubTodos(): Promise<SubTodo[]> {
 		const subTodos = await this.sql`
@@ -229,7 +218,6 @@ export default class Todo {
 	/**
 	 * Delete a SubTodo from database. It's an instance method because
 	 * it's used to delete the specific SubTodo instance on which it's called.
-	 *
 	 * @param subTodoId The Id of SubTodo
 	 */
 
@@ -242,19 +230,19 @@ export default class Todo {
 	}
 	/**
 	 * Retrieves a specific SubTodo associated with the current Todo.
-	 *
 	 * @param {number} subTodoId - The unique identifier of the SubTodo to retrieve.
-	 *
 	 * @returns {Promise<SubTodo>} A promise that resolves to the SubTodo instance created from the retrieved data.
 	 */
-	async readSubTodo(subTodoId: number): Promise<SubTodo> {
-		const [subTodos] = await this.sql`
+	async readSubTodo(subTodoId: number): Promise<SubTodo | null> {
+		const [subTodo] = await this.sql`
 			SELECT * FROM subtodos
-			WHERE todo_id = ${this.props.id} and id = ${subTodoId}
+			WHERE id = ${subTodoId}
 		`;
+		if (!subTodo) return null;
+
 		return new SubTodo(
 			this.sql,
-			convertToCase(snakeToCamel, subTodos) as SubTodoProps,
+			convertToCase(snakeToCamel, subTodo) as SubTodoProps,
 		);
 	}
 }

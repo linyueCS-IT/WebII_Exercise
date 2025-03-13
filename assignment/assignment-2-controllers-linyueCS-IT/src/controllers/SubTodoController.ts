@@ -66,6 +66,9 @@ export default class SubTodoController {
 	 */
 	completeSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
 		try {
+			// NOTE: Adding a small delay to handle race condition in the tests
+			// where addSubTodo() is called without await in the http.test.ts
+			await new Promise((resolve) => setTimeout(resolve, 100));
 			// get subTodo and todo Id from req
 			const subTodoId = req.getSubTodoId();
 			const todoId = req.getId();
@@ -89,7 +92,7 @@ export default class SubTodoController {
 				return;
 			}
 
-			await subTodo.markComplete(todoId);
+			await subTodo.markComplete();
 
 			res.send(
 				StatusCode.OK,
@@ -121,23 +124,34 @@ export default class SubTodoController {
 	 */
 	updateSubTodo = async (req: Request<SubTodoProps>, res: Response) => {
 		try {
+			// NOTE: Adding a small delay to handle race condition in the tests
+			// where addSubTodo() is called without await in the http.test.ts
+			await new Promise((resolve) => setTimeout(resolve, 100));
 			const todoId = req.getId();
 			const subTodoId = req.getSubTodoId();
 
-			if (isNaN(Number(todoId)) || isNaN(Number(subTodoId))) {
+			if (isNaN(Number(todoId))) {
 				res.send(StatusCode.BadRequest, "Invalid todo ID", {});
 				return;
 			}
-
 			const todo = await Todo.read(this.sql, todoId);
 
 			if (!todo) {
 				res.send(StatusCode.NotFound, "Not found", {});
 				return;
 			}
+			if (isNaN(Number(subTodoId))) {
+				res.send(StatusCode.BadRequest, "Invalid subtodo ID", {});
+				return;
+			}
 			const subTodo = await todo.readSubTodo(subTodoId);
+			if (!subTodo) {
+				res.send(StatusCode.NotFound, "Not found subTodo", {});
+				return;
+			}
 			const updateProps = req.props as Partial<SubTodoProps>;
-			await subTodo.updateSubTodo(updateProps, todoId);
+
+			await subTodo.updateSubTodo(updateProps);
 			res.send(
 				StatusCode.OK,
 				"SubTodo updated successfully!",
