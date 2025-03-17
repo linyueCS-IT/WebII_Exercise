@@ -14,6 +14,7 @@ app.use(express.json());
  * Responds with a welcome message when the root URL is accessed.
  */
 app.get("/", getHome);
+// app.get();
 
 /**
  * Indicate the router for the endpoint.
@@ -25,6 +26,7 @@ app.use("/pokemon", pokemonRouter);
  * there would be a router to handle the endpoint and in the server.ts
  * app.use("/pokemonmovies",pokemonMoviesRouter)
  */
+
 
 /**
  * Starts the Express server and listens on the specified port.
