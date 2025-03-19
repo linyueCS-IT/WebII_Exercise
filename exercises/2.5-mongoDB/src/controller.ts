@@ -4,7 +4,8 @@
  * - getOne, getAll, and addOne are functions from the model that interact with the database.
  */
 import { Request, Response } from "express";
-import { getOne, getAll, addOne, updateOnePokemon, deleteOne } from "./model";
+import { getOne, getAll, addOne,  deleteOne, updateOnePokemon, } from "./model";
+import { ObjectId } from "mongodb";
 
 /**
  * TODO: Copy the route handling logic from the previous exercise
@@ -26,8 +27,27 @@ export const getHome = (req: Request, res: Response) => {
  */
 export const getAllPokemon = async (req: Request, res: Response) => {
 	console.log("Get my all Pokemon");
-
-	
+	try {
+		const pokemonCollection = await getAll(); // Get collection
+		if (pokemonCollection) {
+			const pokemon = await pokemonCollection.find().toArray(); // Fetch pokemons as an array
+			console.log(pokemon);
+			res.status(200).json({
+				success: "Pokemon Collection Found",
+				pokemon,
+			});
+		} else {
+			res.status(500).json({
+				success: false,
+				message: "Pokemon Collection does not exists",
+			});
+		}
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}	
 };
 
 /**
@@ -36,11 +56,37 @@ export const getAllPokemon = async (req: Request, res: Response) => {
  */
 export const getOnePokemon = async (req: Request, res: Response) => {
 	console.log(`Getting one Pokemon by ID `);
-	const pokemonId = req.params.id; // Extract ID from request parameters
+	try {		
+		const pokemonId = req.params.id; // Extract ID from request parameters
 
-	const foundPokemon = await getOne(pokemonId); // Get collection
+		if (!pokemonId){
+			res.status(500).json({
+				success: false,
+				message: "Pokemon does not exists",
+			});
+		}
+		const foundPokemon = await getOne(pokemonId); // Get collection
 
-	/** TODO Return appropriate server responses */
+		if(!foundPokemon){
+			res.status(404).json({
+				success: false,
+				message: "Pokemon not found",
+			});
+		}
+
+		res.status(200).json({
+			success: "Pokemon Collection Found",
+			foundPokemon,
+		})
+
+		/** TODO Return appropriate server responses -done */
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+	
 };
 
 /**
@@ -48,19 +94,39 @@ export const getOnePokemon = async (req: Request, res: Response) => {
  */
 export const createPokemon = (req: Request, res: Response) => {
 	console.log(`Adding a new Pokemon `);
-	const newPokemon = req.body;
-	
-	 
-
-	/** TODO Return appropriate server responses */
+	try {
+		const newPokemon = req.body;
+		addOne(newPokemon);
+		console.log(newPokemon);
+		res.status(200).json({
+			success: "new pokemon added",
+			newPokemon,
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}	
 };
 
 /**
  * PUT /pokemon/:id - Updates an existing Pokemon by its ID.
  */
 export const updatePokemon = async (req: Request, res: Response) => {
+	console.log(`Update a Pokemon `);
 	try {
-		/** Complete this section */
+		const pokemonId = req.params.id;
+		const updateData = req.body;
+		const updatedPokemon = await updateOnePokemon(pokemonId, updateData);
+
+		console.log(updateOnePokemon);
+
+		res.status(200).json({
+		success: "pokemon updated",
+		updatedPokemon,
+		});
+
 	} catch (error) {
 		console.error("Error updating Pokemon:", error);
 		res.status(500).json({ message: "Internal server error" });
@@ -71,6 +137,7 @@ export const updatePokemon = async (req: Request, res: Response) => {
  * DELETE /pokemon/:id - Deletes a Pokemon from the database by its ID.
  */
 export const deletePokemon = async (req: Request, res: Response) => {
+	console.log(`Delete a Pokemon `);
 	try {
 		/** Complete this section */
 	} catch {
