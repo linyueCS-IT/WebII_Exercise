@@ -13,9 +13,9 @@ export interface Pokemon {
 
 export const database: Pokemon[] = [
 	{ id: 1, name: "Pikachu", type: "Electric" },
-	// { id: 2, name: "bulbasaur", type: "grass" },
-	// { id: 3, name: "squirtle", type: "Water" },
-	// { id: 4, name: "kakuna", type: "bug" },
-	// { id: 5, name: "bulbasaur", type: "grass" },
-	// { id: 6, name: "Gyarados", type: "Water" },
+	{ id: 2, name: "bulbasaur", type: "grass" },
+	{ id: 3, name: "squirtle", type: "Water" },
+	{ id: 4, name: "kakuna", type: "bug" },
+	{ id: 5, name: "bulbasaur", type: "grass" },
+	{ id: 6, name: "Gyarados", type: "Water" },
 ];

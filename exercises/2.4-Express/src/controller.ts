@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { database, Pokemon } from "./model";
 import { isConstructorDeclaration } from "typescript";
 
@@ -28,10 +28,10 @@ export const getHome = (req: Request, res: Response) => {
 export const getAllPokemon = (req: Request, res: Response) => {
 	const filterType = req.query.type?.toString().toLowerCase();
 	const sortByResult = req.query.sortBy?.toString().toLowerCase();
-
-	if (sortByResult === "name") {
-		database.sort((a, b) => a.name.localeCompare(b.name));
-	}
+    
+	// if (sortByResult && sortByResult === "name") {
+	// 	database.sort((a, b) => a.name.localeCompare(b.name));
+	// }
 
 	if (filterType) {
 		const filterPokemon = database.filter(
@@ -41,7 +41,7 @@ export const getAllPokemon = (req: Request, res: Response) => {
 		);
 		if (filterPokemon.length > 0) {
 			filterPokemon.forEach((pokemon) =>
-				console.log("get Pokemon:\n", pokemon),
+				console.log(`get ${filterType} Pokemon:\n`, pokemon),
 			);
 			res.status(200).json({
 				Message: `Get ${filterType} type Pokemon:`,
@@ -52,10 +52,19 @@ export const getAllPokemon = (req: Request, res: Response) => {
 			return;
 		}
 	} else {
-		database.forEach((data) =>
-			console.log("Get all Pokemon:\n", JSON.stringify(data)),
-		);
-		res.status(200).json(database);
+
+		if (sortByResult && sortByResult === "name") {
+			database.sort((a, b) => a.name.localeCompare(b.name));
+			database.forEach((data) =>
+				console.log(`Get all Pokemon order by ${sortByResult}:\n`, JSON.stringify(data)),
+			);
+			res.status(200).json(database);
+		}else{
+			database.forEach((data) =>
+				console.log("Get all Pokemon:\n", JSON.stringify(data)),
+			);
+			res.status(200).json(database);
+		}		
 	}
 };
 
@@ -70,22 +79,27 @@ export const getOnePokemon = (req: Request, res: Response) => {
 	// url is not http://localhost:3000/pokemon/1 -> "/pokemon/1"
 	// Use req.params.id instead of req.url.split("/").
 	// const urlParts = req.url.split("/");
-	const pokemonId = Number(req.params.id);
-	// Check id valid
-	if (isNaN(pokemonId)) {
-		res.status(400).json({ Message: "Invalid Pokemon ID!" });
-		return;
+	try {
+		const pokemonId = Number(req.params.id);
+		// Check id valid
+		if (isNaN(pokemonId)) {
+			res.status(400).json({ Message: "Invalid Pokemon ID!" });
+			return;
+		}
+	
+		const foundPokemon = database.find((pokemon) => pokemon.id === pokemonId);
+	
+		// Check Pokemon exist or not
+		if (!foundPokemon) {
+			res.status(404).json({ Message: "Pokemon not found!" });
+			return;
+		}
+		console.log("Get Pokemon:\n", foundPokemon);
+		res.status(200).json(foundPokemon);
+	} catch (error) {
+		res.status(500).json();
 	}
 
-	const foundPokemon = database.find((pokemon) => pokemon.id === pokemonId);
-
-	// Check Pokemon exist or not
-	if (!foundPokemon) {
-		res.status(404).json({ Message: "Pokemon not found!" });
-		return;
-	}
-	console.log("Delete Pokemon:\n", foundPokemon);
-	res.status(200).json(foundPokemon);
 };
 
 /** POST /pokemon
@@ -95,19 +109,23 @@ export const getOnePokemon = (req: Request, res: Response) => {
  * @param res
  */
 export const createPokemon = (req: Request, res: Response) => {
-	// console.log(req.body);
-	const newPokemon = {
-		id: database.length + 1,
-		name: req.body.name,
-		type: req.body.type,
-	} as Pokemon;
-	// const newPokemon = req.body as Pokemon;
-	// newPokemon.id = database.length + 1; // Simple ID assignment
-	database.push(newPokemon);
-	console.log("Create Pokemon successful!\n", newPokemon);
-	console.log("Current database:\n", database);
-	console;
-	res.status(201).json(newPokemon);
+	try {
+		// console.log(req.body);
+		const newPokemon = {
+			id: database.length + 1,
+			name: req.body.name,
+			type: req.body.type,
+		} as Pokemon;
+		// const newPokemon = req.body as Pokemon;
+		// newPokemon.id = database.length + 1; // Simple ID assignment
+		database.push(newPokemon);
+		console.log("Create Pokemon successful!\n", newPokemon);
+		console.log("Current database:\n", database);
+		console;
+		res.status(201).json(newPokemon);		
+	} catch (error) {
+		res.status(500).json();
+	}
 };
 
 /** PUT /pokemon/:id
@@ -129,34 +147,38 @@ export const updatePokemon = (req: Request, res: Response) => {
 		- When id is a filter (for example, getting a subset of multiple Pokmon).
 		- When id is optional
 	 */
-	const pokemonId = Number(req.params.id);
+	try {
+		const pokemonId = Number(req.params.id);
 
-	// Check id valid
-	if (isNaN(pokemonId)) {
-		res.status(400).json({ Message: "Invalid Pokemon ID!" });
-		return;
+		// Check id valid
+		if (isNaN(pokemonId)) {
+			res.status(400).json({ Message: "Invalid Pokemon ID!" });
+			return;
+		}
+
+		const foundPokemonId = database.findIndex(
+			(pokemon) => pokemonId === pokemon.id,
+		);
+
+		// Check if Pokémon exists
+		if (foundPokemonId === -1) {
+			res.status(404).json({ Message: "Pokemon not found!" });
+			return;
+		}
+
+		const updateData = req.body as Pokemon;
+		database[foundPokemonId] = {
+			...database[foundPokemonId],
+			...updateData,
+		};
+		console.log(
+			`Pokemon id: ${pokemonId} updated!!\n`,
+			database[foundPokemonId],
+		);
+		res.status(200).json(database[foundPokemonId]);
+	} catch (error) {
+		res.status(500).json();
 	}
-
-	const foundPokemonId = database.findIndex(
-		(pokemon) => pokemonId === pokemon.id,
-	);
-
-	// Check if Pokémon exists
-	if (foundPokemonId === -1) {
-		res.status(404).json({ Message: "Pokemon not found!" });
-		return;
-	}
-
-	const updateData = req.body as Pokemon;
-	database[foundPokemonId] = {
-		...database[foundPokemonId],
-		...updateData,
-	};
-	console.log(
-		`Pokemon id: ${pokemonId} updated!!\n`,
-		database[foundPokemonId],
-	);
-	res.status(200).json(database[foundPokemonId]);
 };
 
 /** DELETE /pokemon/:id
@@ -166,32 +188,38 @@ export const updatePokemon = (req: Request, res: Response) => {
  * @param res
  */
 export const deletePokemon = (req: Request, res: Response) => {
-	const pokemonId = Number(req.params.id);
-	// Check id valid
-	if (isNaN(Number(pokemonId))) {
-		res.status(400).json({ Message: "Invalid Pokemon ID!" });
-		return;
-	}
+	try{
+		const pokemonId = Number(req.params.id);
+		// Check id valid
+		if (isNaN(Number(pokemonId))) {
+			res.status(400).json({ Message: "Invalid Pokemon ID!" });
+			return;
+		}
 
-	const foundPokemonId = database.findIndex(
-		(pokemon) => (pokemon.id = pokemonId - 1),
-	);
-	// console.log("delete id is ",foundPokemonId)
-	// Check if Pokémon exists
-	if (foundPokemonId === -1) {
-		res.status(404).json({ Message: "Pokemon not found!" });
-		return;
-	}
-	const deleteData = database[foundPokemonId];
-	// way1
-	database.splice(foundPokemonId, 1);
-	// // way2
-	// delete database[foundPokemonId];
-	// // way3
-	// const updateDatabase = database.filter(pokemon => pokemon.id !== foundPokemonId)
-	console.log("Current database\n", deleteData);
+		const foundPokemonId = database.findIndex(
+			(pokemon) => (pokemon.id = pokemonId - 1),
+		);
+		// console.log("delete id is ",foundPokemonId)
+		// Check if Pokémon exists
+		if (foundPokemonId === -1) {
+			res.status(404).json({ Message: "Pokemon not found!" });
+			return;
+		}
+		const deleteData = database[foundPokemonId];
+		// way1
+		database.splice(foundPokemonId, 1);
+		// // way2
+		// delete database[foundPokemonId];
+		// // way3
+		// const updateDatabase = database.filter(pokemon => pokemon.id !== foundPokemonId)
+		console.log("Current database\n", deleteData);
 
-	res.status(200).json({ Message: "Pokemon deleted!", deleteData });
+		res.status(200).json({ Message: "Pokemon deleted!", deleteData });
+
+	}catch(error){
+		res.status(500).json({ Message: "server can not work!" });
+	}
+	
 };
 
 // curl -X POST -H "Content-Type: application/json" -d '{"name": "Bulbasaur", "type": "Grass"}' http://localhost:3000/pokemon

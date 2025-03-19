@@ -20,15 +20,18 @@ app.use(express.json());
  * Responds with a welcome message when the root URL is accessed.
  */
 app.get("/", getHome);
-app.get("/pokemon/:id", getOnePokemon);
-app.post("/pokemon", createPokemon);
-app.put("/pokemon/:id", updatePokemon);
-app.delete("/pokemon/:id", deletePokemon);
+// app.get("/pokemon/:id", getOnePokemon);
+// app.post("/pokemon", createPokemon);
+// app.put("/pokemon/:id", updatePokemon);
+// app.delete("/pokemon/:id", deletePokemon);
 
 /**
  * Indicate the router for the endpoint.
  */
 app.use("/pokemon", pokemonRouter);
+
+
+
 /**
  * if there were multiple endpoints in the application.
  * you'd for example, if there was /pokemonmovies
