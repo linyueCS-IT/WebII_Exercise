@@ -63,6 +63,14 @@ export async function deletePokemon(pokemon: Pokemon): Promise<string> {
 	}
 }
 
+/**
+ * 
+ * @returns 
+ */
+export async function fetchPokemonWithError(): Promise<never> {
+	return Promise.reject(new Error("Failed to fetch Pokemon"));
+}
+
 (async () => {
 	await createPokemon({ name: "Bulbasaur", type: "Grass" });
 	await fetchPokemon();
