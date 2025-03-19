@@ -1,6 +1,12 @@
 import express from "express";
 import pokemonRouter from "./router";
-import { getHome } from "./controller"; // ideally should not be in the controller.
+import {
+	getHome,
+	getOnePokemon,
+	createPokemon,
+	updatePokemon,
+	deletePokemon,
+} from "./controller"; // ideally should not be in the controller.
 const hostname = "127.0.0.1";
 
 const app = express();
@@ -14,14 +20,10 @@ app.use(express.json());
  * Responds with a welcome message when the root URL is accessed.
  */
 app.get("/", getHome);
-// app.get("/pokemon/:id", (req, res) => {
-// 	console.log("req.url:", req.url); // original url "/pokemon/1"
-// 	console.log("req.path:", req.path); // path "/pokemon/1"
-// 	console.log("req.params:", req.params); // Path parameter
-// 	console.log("req.query:", req.query); // Query parameter { id: "1" }
-
-// res.send("Check the console for req details!");
-// });
+app.get("/pokemon/:id", getOnePokemon);
+app.post("/pokemon", createPokemon);
+app.put("/pokemon/:id", updatePokemon);
+app.delete("/pokemon/:id", deletePokemon);
 
 /**
  * Indicate the router for the endpoint.
