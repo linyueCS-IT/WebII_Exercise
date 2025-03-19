@@ -39,7 +39,6 @@ export const getAllPokemon = (req: IncomingMessage, res: ServerResponse) => {
     let newDatabase;
     const typeFilter = queryParams.get("type");
     const sortBy = queryParams.get("sortBy");
-    const orderBy = queryParams.get("order");
     if (typeFilter) {
         newDatabase = database.filter(db => db.type === typeFilter);      
     }else{
@@ -132,7 +131,7 @@ export const updatePokemon = (req: IncomingMessage, res: ServerResponse) => {
         const pokemonId = parseInt(urlParts[urlParts.length - 1]);
         console.log(`Updating Pokémon with ID: ${pokemonId}`); // Log ID for debugging
         
-        if (Number.isNaN(pokemonId)) {
+        if (isNaN(Number(pokemonId))) {
             res.statusCode = 400;
             return res.end(JSON.stringify({ message: "Invalid Pokemon ID" }, null, 2));
         }
@@ -186,6 +185,10 @@ export const deletePokemon = (req: IncomingMessage, res: ServerResponse) => {
     if (req.method === 'DELETE' && req.url?.startsWith('/pokemon/')){
         const urlParts = req.url.split('/');
         const pokemonId = parseInt(urlParts[2]);
+        if (isNaN(Number(pokemonId))) {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ message: "Invalid Pokemon ID" }, null, 2));
+        }
         const foundPokemonIndex = database.findIndex(pokemon => pokemon.id === pokemonId) 
         if (foundPokemonIndex === -1){
             res.statusCode = 404;

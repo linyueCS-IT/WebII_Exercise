@@ -14,7 +14,14 @@ app.use(express.json());
  * Responds with a welcome message when the root URL is accessed.
  */
 app.get("/", getHome);
-// app.get();
+// app.get("/pokemon/:id", (req, res) => {
+// 	console.log("req.url:", req.url); // original url "/pokemon/1"
+// 	console.log("req.path:", req.path); // path "/pokemon/1"
+// 	console.log("req.params:", req.params); // Path parameter
+// 	console.log("req.query:", req.query); // Query parameter { id: "1" }
+
+// res.send("Check the console for req details!");
+// });
 
 /**
  * Indicate the router for the endpoint.
@@ -26,7 +33,6 @@ app.use("/pokemon", pokemonRouter);
  * there would be a router to handle the endpoint and in the server.ts
  * app.use("/pokemonmovies",pokemonMoviesRouter)
  */
-
 
 /**
  * Starts the Express server and listens on the specified port.
