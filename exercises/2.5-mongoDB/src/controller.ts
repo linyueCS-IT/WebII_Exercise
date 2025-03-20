@@ -85,8 +85,7 @@ export const getOnePokemon = async (req: Request, res: Response) => {
 			success: false,
 			message: "Internal server error",
 		});
-	}
-	
+	}	
 };
 
 /**
@@ -145,3 +144,18 @@ export const deletePokemon = async (req: Request, res: Response) => {
 		res.status(500).json({ message: "Internal server error" });
 	}
 };
+
+
+/**
+curl -v http://localhost:3000/pokemon
+
+curl -v http://localhost:3000/pokemon/id_from_mongodb
+
+curl -v -X POST -H "Content-Type: application/json" -d '{"name": "Bulbasaur", "type": "Grass"}' http://localhost:3000/pokemon
+
+curl -v -X PUT -H "Content-Type: application/json" -d '{"type": "Poison"}' http://localhost:3000/pokemon/id_from_mongodb
+
+curl -v -X DELETE http://localhost:3000/pokemon/id_from_mongodb
+
+  
+ */
