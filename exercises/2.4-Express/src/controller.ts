@@ -28,20 +28,16 @@ export const getHome = (req: Request, res: Response) => {
 export const getAllPokemon = (req: Request, res: Response) => {
 	const filterType = req.query.type?.toString().toLowerCase();
 	const sortByResult = req.query.sortBy?.toString().toLowerCase();
-    
-	// if (sortByResult && sortByResult === "name") {
-	// 	database.sort((a, b) => a.name.localeCompare(b.name));
-	// }
 
 	if (filterType) {
 		const filterPokemon = database.filter(
 			(pokemon) =>
-				pokemon.type.toLocaleLowerCase() ===
-				filterType.toLocaleLowerCase(),
+				pokemon.type.toLowerCase() === filterType.toLowerCase(),
 		);
 		if (filterPokemon.length > 0) {
+			console.log(`get ${filterType} Pokemon:\n`);
 			filterPokemon.forEach((pokemon) =>
-				console.log(`get ${filterType} Pokemon:\n`, pokemon),
+				console.log(pokemon),
 			);
 			res.status(200).json({
 				Message: `Get ${filterType} type Pokemon:`,
@@ -52,19 +48,21 @@ export const getAllPokemon = (req: Request, res: Response) => {
 			return;
 		}
 	} else {
-
 		if (sortByResult && sortByResult === "name") {
 			database.sort((a, b) => a.name.localeCompare(b.name));
+			console.log(`Get all Pokemon order by ${sortByResult}:\n`);
 			database.forEach((data) =>
-				console.log(`Get all Pokemon order by ${sortByResult}:\n`, JSON.stringify(data)),
+				console.log(
+					JSON.stringify(data),
+				),
 			);
 			res.status(200).json(database);
-		}else{
+		} else {
 			database.forEach((data) =>
 				console.log("Get all Pokemon:\n", JSON.stringify(data)),
 			);
 			res.status(200).json(database);
-		}		
+		}
 	}
 };
 
@@ -82,13 +80,15 @@ export const getOnePokemon = (req: Request, res: Response) => {
 	try {
 		const pokemonId = Number(req.params.id);
 		// Check id valid
-		if (isNaN(pokemonId)) {
+		if (isNaN(Number(pokemonId))) {
 			res.status(400).json({ Message: "Invalid Pokemon ID!" });
 			return;
 		}
-	
-		const foundPokemon = database.find((pokemon) => pokemon.id === pokemonId);
-	
+
+		const foundPokemon = database.find(
+			(pokemon) => pokemon.id === pokemonId,
+		);
+
 		// Check Pokemon exist or not
 		if (!foundPokemon) {
 			res.status(404).json({ Message: "Pokemon not found!" });
@@ -99,7 +99,6 @@ export const getOnePokemon = (req: Request, res: Response) => {
 	} catch (error) {
 		res.status(500).json();
 	}
-
 };
 
 /** POST /pokemon
@@ -122,7 +121,7 @@ export const createPokemon = (req: Request, res: Response) => {
 		console.log("Create Pokemon successful!\n", newPokemon);
 		console.log("Current database:\n", database);
 		console;
-		res.status(201).json(newPokemon);		
+		res.status(201).json(newPokemon);
 	} catch (error) {
 		res.status(500).json();
 	}
@@ -188,10 +187,10 @@ export const updatePokemon = (req: Request, res: Response) => {
  * @param res
  */
 export const deletePokemon = (req: Request, res: Response) => {
-	try{
+	try {
 		const pokemonId = Number(req.params.id);
 		// Check id valid
-		if (isNaN(Number(pokemonId))) {
+		if (isNaN(pokemonId)) {
 			res.status(400).json({ Message: "Invalid Pokemon ID!" });
 			return;
 		}
@@ -215,11 +214,9 @@ export const deletePokemon = (req: Request, res: Response) => {
 		console.log("Current database\n", deleteData);
 
 		res.status(200).json({ Message: "Pokemon deleted!", deleteData });
-
-	}catch(error){
+	} catch (error) {
 		res.status(500).json({ Message: "server can not work!" });
 	}
-	
 };
 
 // curl -X POST -H "Content-Type: application/json" -d '{"name": "Bulbasaur", "type": "Grass"}' http://localhost:3000/pokemon
