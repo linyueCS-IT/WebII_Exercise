@@ -36,9 +36,7 @@ export const getAllPokemon = (req: Request, res: Response) => {
 		);
 		if (filterPokemon.length > 0) {
 			console.log(`get ${filterType} Pokemon:\n`);
-			filterPokemon.forEach((pokemon) =>
-				console.log(pokemon),
-			);
+			filterPokemon.forEach((pokemon) => console.log(pokemon));
 			res.status(200).json({
 				Message: `Get ${filterType} type Pokemon:`,
 				filterPokemon,
@@ -51,16 +49,11 @@ export const getAllPokemon = (req: Request, res: Response) => {
 		if (sortByResult && sortByResult === "name") {
 			database.sort((a, b) => a.name.localeCompare(b.name));
 			console.log(`Get all Pokemon order by ${sortByResult}:\n`);
-			database.forEach((data) =>
-				console.log(
-					JSON.stringify(data),
-				),
-			);
+			database.forEach((data) => console.log(data));
 			res.status(200).json(database);
 		} else {
-			database.forEach((data) =>
-				console.log("Get all Pokemon:\n", JSON.stringify(data)),
-			);
+			console.log("Get all Pokemon:\n");
+			database.forEach((data) => console.log(data));
 			res.status(200).json(database);
 		}
 	}
