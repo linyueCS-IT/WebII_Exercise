@@ -3,6 +3,8 @@ import "./App.css";
 import Greeting from "./components/Greeting";
 import PokemonList from "./components/PokemonList";
 import Welcome from "./components/Welcome";
+import MainHeader from "./components/MainHeader";
+import { useState } from "react";
 
 // class Welcome extends React.Component {
 // 	constructor(props) {
@@ -31,10 +33,12 @@ import Welcome from "./components/Welcome";
 // }
 
 function App() {
-	const name = "Linyue";
-	const name2 = "Pokemon";
-	const myPokemons = ["Charmander", "Bulbasaur", "Pikachu", "Squirtle"]
-	const myColor = "SteelBlue";
+	// const name = "Linyue";
+	// const name2 = "Pokemon";
+	// const myColor = "SteelBlue";
+	// const myPokemons = ["Charmander", "Bulbasaur", "Pikachu", "Squirtle"]
+	const [count, setCount] = useState(0);
+	
 	return (
 		<div className="container">
 			<article>
@@ -43,9 +47,9 @@ function App() {
 						{/* <h1 style={{color: "SteelBlue"}}> Meet my {name}</h1> */}
 						{/* <Welcome name="Pokemons" /> */}
 						{/* <Greeting name = "Pokemon" /> */}
-						<Welcome name = {name} color = {myColor} />
+						{/* <Welcome name = {name} color = {myColor} />
 						<Greeting name = {name2} />
-						<p>My friend has power</p>
+						<p>My friend has <b>power</b></p> */}
 						{/* {
 							<ul>
 								{myPokemon.map((pokemon) =>(
@@ -53,11 +57,14 @@ function App() {
 								))}
 							</ul>
 						} */}
-						<PokemonList pokemons ={myPokemons}></PokemonList>
+						{/* <PokemonList pokemons ={myPokemons}></PokemonList> */}
+						<MainHeader /> {" "}
 					</div>
 				</hgroup>
-				<button onClick={() => alert("Hi there")} >Click Me</button>
+				<h3> Counter: {count} </h3>
+				{/* <button onClick={() => alert("Hi there")} >Click Me</button> */}
 			</article>
+			<button onClick={() => setCount(count + 1)}>Increase</button>
 		</div>
 	);
 }

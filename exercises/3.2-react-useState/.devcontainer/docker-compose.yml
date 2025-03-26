@@ -1,0 +1,16 @@
+# This Docker Compose file is designed to set up a development environment with a Node.js.
+#
+
+version: "3.8" # Specifies the version of the Compose file format.
+
+services:
+    # Defines the 'node' service
+    node:
+        image: mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye # Dockerfile to use for building the image.
+        #build: ../.
+        #command: npm run start:dev
+        # Mounts the parent directory of the current directory to /workspaces in the container.
+        # 'cached' improves performance for macOS.
+        volumes:
+            - ../..:/workspaces:cached
+        command: sleep infinity # Overrides the default command to keep the container running indefinitely.
