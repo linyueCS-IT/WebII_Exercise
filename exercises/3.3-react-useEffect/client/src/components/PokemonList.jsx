@@ -1,18 +1,13 @@
-import React from "react"
+import React from "react";
 
-const PokemonList = (props) =>{
+const PokemonList = ({ pokemons }) => {
 	return (
 		<ul>
-			{props.pokemons.map((pokemon) =>(
-				<li key={pokemon.id}>
-				{""}
-				{pokemon.name} 
-				{pokemon.type} 
-				{""}
-			</li>
-			))}			
-	  	</ul>
+			{pokemons.map((pokemon) => (
+				<li key={pokemon.id}>{pokemon.name}</li>
+			))}
+		</ul>
 	);
-}
+};
 
 export default PokemonList;
