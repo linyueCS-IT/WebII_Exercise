@@ -15,14 +15,16 @@ export const getHome = (req: IncomingMessage, res: ServerResponse) => {
      * 2. Get the language from the cookie.
      * 3. Send the appropriate Welcome message to the view based on the language.
      */
-	const id = Number(req.url?.split("/")[2]);
-	const findPokemon = database.find(pokemon => id === pokemon.id)
+	 console.log('Request received at getHome');
+	 console.log('Cookies:', req.headers.cookie);
 	
 
-	let message = "";
+	let message = "WELCOME";
 	// Check if English or French is present in the cookies.
 	// const cookies = getCookies(req);
 	// const languageCode = cookies.language === "fr" ? "fr" : "en";
+
+	
 	
 
 	// Set response headers
@@ -49,14 +51,17 @@ export const getHome = (req: IncomingMessage, res: ServerResponse) => {
 	res.setHeader("Access-Control-Allow-Credentials", "true"); 
 
 	// Set cookies
-	// just after the CORS headers.
 	res.setHeader("Set-Cookie", [
 		"likes=somethingYouLike;SameSite=Strict",
 		"lovesWebDev=false",
-		// "hobby=trave"
 	]);
 
-	console.log(req.headers.cookie);
+	// res.setHeader("Set-Cookie", [
+	// 	"likes=somethingYouLike; SameSite=Strict; Path=/",
+	// 	"lovesWebDev=false; SameSite=Strict; Path=/; Max-Age=86400",
+	//   ]);
+
+	console.log(req.headers.cookie)
     // Send JSON response
 	res.end(JSON.stringify({ message: message }, null, 2));
 };
@@ -70,7 +75,6 @@ export const getAllPokemon = (req: IncomingMessage, res: ServerResponse) => {
 	 * 4. Set the response headers based on the getHome example
      */
 	console.log("Get all pokemon");
-	
 
 	res.statusCode = 200;
 	res.setHeader("Content-Type", "application/json");
@@ -145,7 +149,6 @@ const getCookies = (req: IncomingMessage): Record<string, string> => {
 	 *    - Assign the name as the key and the value as the value.
 	 * 3. Return the object, empty object if there a no cookies..
 	 */
-
 
 	return {};
 };
