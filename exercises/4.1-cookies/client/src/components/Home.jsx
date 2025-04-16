@@ -31,6 +31,7 @@ function Home() {
 			<img src={Logo} alt="Pokemon Logo" />
 			<div>
 				<CookiesDisplay />
+				{/* <LanguageSelector /> */}
 			</div>
 			<div> </div>
 		</>

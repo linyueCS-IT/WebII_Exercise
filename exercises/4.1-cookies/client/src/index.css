@@ -75,5 +75,6 @@ button:focus-visible {
 	}
 	button {
 		background-color: #646cff;
+		margin: 26px;		
 	}
 }

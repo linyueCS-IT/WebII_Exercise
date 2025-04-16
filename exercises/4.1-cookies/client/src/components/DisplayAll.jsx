@@ -35,9 +35,12 @@ export default function DisplayAll() {
 					</tr>
 					{pokemon.map((poke) => (
 						<tr key={poke.id}>
-							<td>{poke.id.en}</td>
+							{/* <td>{poke.id.en}</td>
 							<td>{poke.name.en}</td>
-							<td>{poke.type.en}</td>
+							<td>{poke.type.en}</td> */}
+							<td>{poke.id}</td>
+							<td>{poke.name}</td>
+							<td>{poke.type}</td>
 						</tr>
 					))}
 				</tbody>

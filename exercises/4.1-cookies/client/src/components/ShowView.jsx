@@ -12,9 +12,9 @@ export default function ShowView({ pokemon }) {
 					<tr>
 						<td>{pokemon.id}</td>
 						{/*adding checks to avoid runtime errors:*/}
-						<td>{pokemon.name?.en}</td>
-						<td>{pokemon.type?.en}</td>
-						<td>{pokemon.info?.en}</td>
+						<td>{pokemon.name}</td>
+						<td>{pokemon.type}</td>
+						<td>{pokemon.info}</td>
 					</tr>
 				</tbody>
 			</table>
