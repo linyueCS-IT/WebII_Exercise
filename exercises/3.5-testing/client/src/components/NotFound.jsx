@@ -1,7 +1,8 @@
 export default function NotFound() {
 	return (
 		<div>
-			<p>Sorry, the page you’re looking for doesn’t exist.</p>
+			<h1>Page not Found</h1>
+			<p>Route not Found</p>
 		</div>
 	);
 }

@@ -11,7 +11,7 @@ function NavBar() {
 					<Link to="/about">About</Link>
 				</li>
 				<li>
-					<Link to="/new">Add New Pokemon</Link>
+					<Link to="/new">Create Pokemon</Link>
 				</li>
 				<li>
 					<Link to="/list-one">List Single Pokemon</Link>

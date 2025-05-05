@@ -35,7 +35,7 @@ export default function DisplayAll() {
 							<th>Type</th>
 						</tr>
 					</thead>
-					{/*<tbody>
+					<tbody>
 						{pokemon.map((poke) => (
 							<tr key={poke.id}>
 								<td>{poke.id}</td>
@@ -44,7 +44,7 @@ export default function DisplayAll() {
 							</tr>
 						))}
 					</tbody>
-					*/}
+					
 				</table>
 			</>
 		</div>

@@ -3,10 +3,10 @@ export default function ShowView({ pokemon }) {
 		<div>
 			<div>
 				<p>
-					<strong>Title:</strong> {pokemon.name}
+					<strong>Name:</strong> {pokemon.name}
 				</p>
 				<p>
-					<strong>Kind:</strong> {pokemon.type}
+					<strong>Type:</strong> {pokemon.type}
 				</p>
 			</div>
 			<img
