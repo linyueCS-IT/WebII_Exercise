@@ -1,0 +1,15 @@
+{
+	"scripts": {
+		"test": "npx playwright test",
+		"test:ui": "npx playwright test --ui-host=0.0.0.0 --ui-port=3001",
+		"postinstall": "npx playwright install --with-deps"
+	},
+	"dependencies": {
+		"dotenv": "^16.5.0"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.43.0",
+		"@types/node": "^22.15.3",
+		"nodemon": "^3.0.3"
+	}
+}
